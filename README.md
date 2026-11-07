@@ -216,7 +216,30 @@ Section:Groupbox{ Groups = { {"A", Image, UDim2.new(0,8,0,8)} }, OpenIndex = 1 }
 
 ---
 
-## 4. 旗标（Flags）与配置
+## 4. 窗口开关
+
+原版 5 个窗口按创建顺序补上了名字（`Library:Window` 收下 `Name` 但从没存进窗口对象，
+原版 `Library:Find` / `Dock.Find` 因此永远返回 nil —— 这里补好了）：
+
+```lua
+UI:FindWindow("Environment")         -- 拿到窗口对象，拿不到返回 nil
+UI:GetWindows()                      -- 全部窗口数组
+
+UI:OpenWindow("Environment")         -- 等于点一下 Dock 上的 Environment
+UI:CloseWindow("Lua")
+UI:ToggleWindow("Activity")          -- 无参 = 取反
+UI:ToggleWindow("Activity", false)   -- 指定状态
+
+-- 对象上也有
+local W = UI:FindWindow("Theme")
+W.Open()  W.Close()  W.Toggle()
+```
+
+窗口名：`Configurations` / `Environment` / `Theme` / `Lua` / `Activity`。
+
+---
+
+## 5. 旗标（Flags）与配置
 
 ```lua
 UI.Flags["Enabled"]:Get()            -- 未分组 flag
@@ -248,7 +271,7 @@ UI.Lua("Unload", "name.lua")
 
 ---
 
-## 5. 主题 / 换色
+## 6. 主题 / 换色
 
 ```lua
 UI:SetAccent(Color3.fromRGB(200, 60, 60))    -- 换强调色（最常用）
@@ -266,7 +289,7 @@ UI.ConfigTheme("Load", "MyTheme")
 
 ---
 
-## 6. 附加组件
+## 7. 附加组件
 
 ```lua
 local Watermark = Window:Watermark{ Text = "cc | 60 fps", Enabled = true }
@@ -290,7 +313,7 @@ UI:Toast("loaded", 3)                    -- 同上简写
 
 ---
 
-## 7. 显隐 / 卸载
+## 8. 显隐 / 卸载
 
 ```lua
 UI:Fade(Window, true)      -- 显示
@@ -303,7 +326,7 @@ UI:Unload()                -- 销毁所有 Gui + 断开全部连接（热重载�
 
 ---
 
-## 8. 依赖与注意事项
+## 9. 依赖与注意事项
 
 1. **必须在带执行器 API 的 Roblox 环境里跑**：`writefile` / `readfile` / `isfile` /
    `isfolder` / `makefolder` / `listfiles` / `delfile` / `loadfile` / `getcustomasset`。
@@ -311,7 +334,7 @@ UI:Unload()                -- 销毁所有 Gui + 断开全部连接（热重载�
 2. **资源是内嵌 base64**：字体 4 套（Tahoma / Consolas Bold / Smallest Pixel-7 / Minecraftia）
    + 图标若干，全部在 `Menu.EncodedAssets` 里，运行时解码写到
    `getconstant.cc/Fonts` 和 `getconstant.cc/Images`，再 `getcustomasset` 转成 asset。
-   所以文件才 1.45 MB。
+   所以文件才 1.62 MB。
 3. **base64 解码器有兜底**：优先用 `crypt.base64.decode`，执行器没有就用内置纯 Lua 实现
    （已用 Python `base64` 对照验证过，1.4 MB 约 0.15 s）。
 4. **改存储路径**：改 `ConstantUI.lua` 第 268 行 `local BasePath = "getconstant.cc"`。
@@ -321,18 +344,23 @@ UI:Unload()                -- 销毁所有 Gui + 断开全部连接（热重载�
 
 ---
 
-## 9. 提取记录（可复现）
+## 10. 提取记录（可复现）
 
 | 项目 | 内容 |
 |---|---|
-| 源文件 | `C:\Users\48714\Downloads\康.lua`（18702 行 / 1.84 MB） |
-| UI 范围 | 原文件 **509 – 8327 行**（`-- Menu Library` → `Menu.Init(Library)` 结束） |
-| 原始切片 | `_build/core.lua`（一字未改，仅把 `: String/Table/Number` 注解规范成小写） |
-| 垫片 | `_build/header.lua`：补齐原脚本里定义在 UI 块之外的全部 local
-（Game/Enum/服务/Color3·UDim2·Vector2 构造器/string·table·math 别名/执行器文件 API/base64） |
-| 导出层 | `_build/footer.lua`：把 Menu 的能力挂到 Library，附加 SetAccent / SaveConfig / GetFlag 等糖 |
-| 重建 | `python _build/build.py` |
-| 校验 | `luau-compile` 通过；`_test/run_test.lua` 用 mock Roblox API 实跑 —— **ALL PASS**（29 项：全部控件构建、旗标读写、配置存取、换色、卸载） |
+| 源文件 | `康.lua`（18,702 行 / 1.84 MB） |
+| 提取范围 | **三段**：228–508（模块空表 + 静态数据表）、509–8327（UI 框架）、8411–12567（完整菜单构建） |
+| `_build/core.lua` | 源 509–8327 行，UI 框架本体，一词未改（仅 `: String/Table/Number` 注解规范成小写） |
+| `_build/decls.lua` | 源 228–508 行，`Menu`/`Shared`/`Esp`/`Visuals`/`Ragebot`… 空表 + `BodyPartNames`/`SkyBoxes`/`TracerProperties` 等静态数据 |
+| `_build/menu_core.lua` | 源 8411–12567 行，整段 `-- Menu Init do ... end`，5 窗口 / 12 Tab / 381 控件原样 |
+| `_build/header.lua` | 环境垫片：补齐 UI 块之外的 local（Game/Enum/服务/构造器/别名/执行器文件 API/base64 兜底） |
+| `_build/stub.lua` | 衔接层：`Library`/`Flags` 接上，18 个功能模块套 `PlaceholderMeta` 万用占位元表 |
+| `_build/footer_full.lua` | 导出层：`Menu`/`Flags`/`Theme`/`SetAccent`/`SaveConfig`/`GetFlag` + 窗口补名与 Open/Close/Toggle |
+| 重建 | `python _build/build.py`（按 header→core→decls→stub→menu_core→footer_full 顺序拼） |
+| 校验 | `luau-compile` 0 错误；`_test/run_test.lua` 用 mock Roblox API 实跑 —— **ALL PASS**（42 项：全部控件构建、5 窗口/12 Tab/24 Section/381 控件结构断言、旗标读写、配置存取、换色、窗口开关、卸载） |
 
-被丢弃的部分：ESP、Visuals、Info、Camera、Legitbot、Ragebot、Knifebot、AntiAim、
-Movement、Shared 模块（`ReplicationInterface` 等游戏内部 require）及其所有 hook。
+**没进库的部分**：ESP / Visuals / Ragebot / Aim 这些功能的**实现代码**，以及
+`Shared.NetworkClient` 一类游戏内部 `Require`。它们被 `PlaceholderMeta` 接管 ——
+菜单上照样能看到、能点、能存配置，但点下去不会真的做任何事。
+`PlaceholderMeta` 的规则：读任何字段返回一个新的占位对象，调用它返回占位对象，
+字符串化是空串，四则运算是 0。所以菜单构建期的每一次 `Shared.XXX.YYY()` 都安全返回。

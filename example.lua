@@ -80,10 +80,17 @@ Library:SaveConfig("my_setup")
 Library:LoadConfig("my_setup")
 Library:SetAutoload("my_setup")  -- 下次加载自动套用
 
--- 5. 找到某个窗口，手动开关
-local Environment = Library:FindWindow("Environment")
-if Environment then
-	Environment:Toggle(true)
+-- 5. 开关原版窗口
+--    5 个窗口名：Configurations / Environment / Theme / Lua / Activity
+Library:OpenWindow("Environment")   -- 等于点一下 Dock 上的 Environment
+Library:ToggleWindow("Activity", false)
+Library:CloseWindow("Lua")
+
+-- 或者拿到窗口对象自己调
+local Theme = Library:FindWindow("Theme")
+if Theme then
+	Theme.Toggle()      -- 无参 = 取反
+	-- Theme.Open()  /  Theme.Close()
 end
 
 -- 6. 通知

@@ -12709,6 +12709,36 @@ function Library:SetFlag(Category, Name, Value, Sub)
 	end
 end
 
+--=============================================================
+-- 窗口：补名 + 开/关/切换
+-- 原版 Library:Window 收下了 Parameters.Name 却从没存进窗口对象，
+-- 导致 Library:Find / Dock.Find 永远返回 nil。这里按创建顺序补回去。
+--=============================================================
+
+do
+	local KnownNames = { "Configurations", "Environment", "Theme", "Lua", "Activity" }
+	local Windows = Library.Windows or {}
+
+	for i = 1, #Windows do
+		local Window = Windows[i]
+
+		if rawget(Window, "Name") == nil and KnownNames[i] then
+			rawset(Window, "Name", KnownNames[i])
+		end
+	end
+
+	for i = 1, #Windows do
+		local Window = Windows[i]
+
+		rawset(Window, "Open", function() Library:Fade(Window, true) end)
+		rawset(Window, "Close", function() Library:Fade(Window, false) end)
+		rawset(Window, "Toggle", function(State)
+			if State == nil then State = not Window.IsVisible end
+			Library:Fade(Window, State)
+		end)
+	end
+end
+
 -- 所有窗口（原版 5 个：Configurations / Environment / Theme / Lua / Activity）
 function Library:GetWindows()
 	return Library.Windows
@@ -12717,6 +12747,31 @@ end
 -- 按名字找窗口：Library:FindWindow("Environment")
 function Library:FindWindow(Name)
 	return Library:Find(Name)
+end
+
+-- 打开 / 关闭 / 切换：Library:OpenWindow("Environment")
+function Library:OpenWindow(Name)
+	local Window = Library:Find(Name)
+
+	if Window then Library:Fade(Window, true) end
+
+	return Window
+end
+
+function Library:CloseWindow(Name)
+	local Window = Library:Find(Name)
+
+	if Window then Library:Fade(Window, false) end
+
+	return Window
+end
+
+function Library:ToggleWindow(Name, State)
+	local Window = Library:Find(Name)
+
+	if Window then Library:Fade(Window, State == nil and not Window.IsVisible or State) end
+
+	return Window
 end
 
 -- 通知（短写法）
