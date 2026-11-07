@@ -8081,6 +8081,4519 @@ do
         end
     end)()
 end
+local Shared = {}
+
+local Mathematics = {}
+local Tickbase = {}
+local Pathfinding = {}
+local Raycasting = {}
+
+local Info = {}
+local Legitbot = {}
+
+local Esp = {}
+local Visuals = {}
+local Camera = {}
+
+local Ragebot = {}
+local Knifebot = {}
+local AntiAim = {}
+
+local SilentAim = {}
+local AimAssist = {}
+local TriggerBot = {}
+
+local Movement = {}
+
+local Misc = {}
+
+
+
+local BodyPartNames = {
+    "Head",
+    "Torso",
+    "Right Arm",
+    "Left Arm",
+    "Right Leg",
+    "Left Leg"
+}
+
+local BodyPartSizes = {
+    ["Head"] = NewVector3(2, 1, 1),
+    ["Torso"] = NewVector3(2, 2, 1),
+    ["Left Arm"] = NewVector3(1, 2, 1),
+    ["Right Arm"] = NewVector3(1, 2, 1),
+    ["Left Leg"] = NewVector3(1, 2, 1),
+    ["Right Leg"] = NewVector3(1, 2, 1)
+}
+
+local AttachmentParents = {
+    ["HeadCenter"] = "Head",
+    ["Neck"] = "Torso",
+    ["Waist"] = "Torso",
+    ["LeftShoulderAttachment"] = "Left Arm",
+    ["LeftGripAttachment"] = "Left Arm",
+    ["RightShoulderAttachment"] = "Right Arm",
+    ["RightGripAttachment"] = "Right Arm",
+    ["LeftThighAttachment"] = "Left Leg",
+    ["LeftFootAttachment"] = "Left Leg",
+    ["RightThighAttachment"] = "Right Leg",
+    ["RightFootAttachment"] = "Right Leg"
+}
+
+local AttachmentPositions = {
+    ["HeadCenter"] = NewVector3(0, 0, 0),
+    ["Neck"] = NewVector3(0, 0.8, 0),
+    ["Waist"] = NewVector3(0, -0.7, 0),
+    ["LeftShoulderAttachment"] = NewVector3(0, 0.5, 0),
+    ["LeftGripAttachment"] = NewVector3(0, -0.7, 0),
+    ["RightShoulderAttachment"] = NewVector3(0, 0.5, 0),
+    ["RightGripAttachment"] = NewVector3(0, -0.7, 0),
+    ["LeftThighAttachment"] = NewVector3(0, 0.7, 0),
+    ["LeftFootAttachment"] = NewVector3(0, -0.7, 0),
+    ["RightThighAttachment"] = NewVector3(0, 0.7, 0),
+    ["RightFootAttachment"] = NewVector3(0, -0.7, 0)
+}
+
+local AttachmentJoints = {
+    { "HeadCenter", "Neck" },
+    { "Neck", "Waist" },
+    { "Neck", "LeftShoulderAttachment" },
+    { "Neck", "RightShoulderAttachment" },
+    { "Waist", "LeftThighAttachment" },
+    { "Waist", "RightThighAttachment" },
+    { "LeftShoulderAttachment", "LeftGripAttachment" },
+    { "RightShoulderAttachment", "RightGripAttachment" },
+    { "LeftThighAttachment", "LeftFootAttachment" },
+    { "RightThighAttachment", "RightFootAttachment" }
+}
+
+local HitsoundIds = {
+    ["Minecraft"] = "rbxassetid://7151570575",
+    ["Neverlose"] = "rbxassetid://6607204501",
+    ["Bonk"] = "rbxassetid://3765689841",
+    ["Bat"] = "rbxassetid://3333907347",
+    ["Laser Beam"] = "rbxassetid://130791043",
+    ["Gamesense"] = "rbxassetid://5633695679",
+    ["Fatality"] = "rbxassetid://6607142036",
+    ["Rust"] = "rbxassetid://5043539486",
+    ["Bow"] = "rbxassetid://93158957747276"
+}
+
+local KillsoundIds = {
+    ["Ultra Kill"] = "rbxassetid://937885646",
+    ["Laugh"] = "rbxassetid://9094639541",
+    ["Fatality"] = "rbxassetid://158012252",
+    ["Sorry"] = "rbxassetid://7405233417"
+}
+
+local SkyBoxes = {
+    ["Default"] = {
+        ["SkyboxLf"] = "rbxassetid://148943339",
+		["SkyboxBk"] = "rbxassetid://148943390",
+		["SkyboxDn"] = "rbxassetid://148943362",
+		["SkyboxFt"] = "rbxassetid://148943404",
+		["SkyboxRt"] = "rbxassetid://148943379",
+		["SkyboxUp"] = "rbxassetid://148943410"
+    },
+
+    ["Nebula"] = {
+        ["SkyboxLf"] = "rbxassetid://159454286",
+		["SkyboxBk"] = "rbxassetid://159454299",
+		["SkyboxDn"] = "rbxassetid://159454296",
+		["SkyboxFt"] = "rbxassetid://159454293",
+		["SkyboxRt"] = "rbxassetid://159454300",
+		["SkyboxUp"] = "rbxassetid://159454288"
+    },
+
+    ["Blue Nebula"] = {
+        ["SkyboxBk"] = "rbxassetid://79187608916257",
+		["SkyboxDn"] = "rbxassetid://79187608916257",
+		["SkyboxFt"] = "rbxassetid://135345543970829",
+		["SkyboxLf"] = "rbxassetid://130684897818024",
+		["SkyboxRt"] = "rbxassetid://134117814265945",
+		["SkyboxUp"] = "rbxassetid://128019898265074"
+    },
+
+    ["Setting Hills"] = {
+        ["SkyboxLf"] = "rbxassetid://264909758",
+		["SkyboxBk"] = "rbxassetid://264908339",
+		["SkyboxDn"] = "rbxassetid://264907909",
+		["SkyboxFt"] = "rbxassetid://264909420",
+		["SkyboxRt"] = "rbxassetid://264908886",
+		["SkyboxUp"] = "rbxassetid://264907379"
+    },
+
+    ["Blue Aurora"] = {
+        ["SkyboxBk"] = "rbxassetid://12064107",
+		["SkyboxDn"] = "rbxassetid://12064152",
+		["SkyboxFt"] = "rbxassetid://12064121",
+		["SkyboxLf"] = "rbxassetid://12063984",
+		["SkyboxRt"] = "rbxassetid://12064115",
+		["SkyboxUp"] = "rbxassetid://12064131"
+    },
+
+    ["Red Aurora"] = {
+        ["SkyboxBk"] = "rbxassetid://401664839",
+		["SkyboxDn"] = "rbxassetid://401664862",
+		["SkyboxFt"] = "rbxassetid://401664960",
+		["SkyboxLf"] = "rbxassetid://401664881",
+		["SkyboxRt"] = "rbxassetid://401664901",
+		["SkyboxUp"] = "rbxassetid://401664936"
+    },
+
+    ["Pink Vision"] = {
+        ["SkyboxBk"] = "rbxassetid://6593929026",
+		["SkyboxDn"] = "rbxassetid://6593930140",
+		["SkyboxFt"] = "rbxassetid://6593931249",
+		["SkyboxLf"] = "rbxassetid://6593932587",
+		["SkyboxRt"] = "rbxassetid://6593933789",
+		["SkyboxUp"] = "rbxassetid://6593935319"
+    },
+
+    ["Twillight"] = {
+        ["SkyboxBk"] = "rbxassetid://570557514",
+		["SkyboxDn"] = "rbxassetid://570557775",
+		["SkyboxFt"] = "rbxassetid://570557559",
+		["SkyboxLf"] = "rbxassetid://570557620",
+		["SkyboxRt"] = "rbxassetid://570557672",
+		["SkyboxUp"] = "rbxassetid://570557727"
+    },
+
+    ["Distopia"] = {
+        ["SkyboxBk"] = "rbxassetid://2240134413",
+		["SkyboxDn"] = "rbxassetid://2240136039",
+		["SkyboxFt"] = "rbxassetid://2240130790",
+		["SkyboxLf"] = "rbxassetid://2240133550",
+		["SkyboxRt"] = "rbxassetid://2240132643",
+		["SkyboxUp"] = "rbxassetid://2240135222"
+    },
+
+    ["Peaceful"] = {
+        ["SkyboxBk"] = "rbxassetid://73252679982122",
+		["SkyboxDn"] = "rbxassetid://101074061181553",
+		["SkyboxFt"] = "rbxassetid://112572775732134",
+		["SkyboxLf"] = "rbxassetid://126931573973019",
+		["SkyboxRt"] = "rbxassetid://135908172504233",
+		["SkyboxUp"] = "rbxassetid://124514468649717"
+    }
+}
+
+local ChamsAnimations = {
+    ["Disabled"] = "",
+    ["Webbed"] = "rbxassetid://2179243880",
+	["Pixelated"] = "rbxassetid://140652787",
+    ["Swirl"] = "rbxassetid://8133639623",
+    ["Shield"] = "rbxassetid://361073795",
+    ["Bubbles"] = "rbxassetid://1461576423",
+    ["Matrix"] = "rbxassetid://10713189068",
+    ["Honeycomb"] = "rbxassetid://179898251",
+    ["Clouds"] = "rbxassetid://5176277457",
+    ["Galaxy"] = "rbxassetid://1120738433",
+    ["Stars"] = "rbxassetid://598201818",
+    ["Wires"] = "rbxassetid://14127933",
+    ["Camo"] = "rbxassetid://3280937154",
+    ["Hexagon"] = "rbxassetid://6175083785",
+    ["Particles"] = "rbxassetid://1133822388",
+    ["Triangular"] = "rbxassetid://4504368932",
+    ["Wall"] = "rbxassetid://4271279",
+    ["Scanning"] = "rbxassetid://5843010904"
+}
+
+local TracerProperties = {
+    ["Obelus"] = {
+        ["Texture"] = "rbxassetid://2382169232",
+        ["Brightness"] = 1.5,
+        ["Transparency"] = NewNumberSequence(0.45),
+        ["LightEmission"] = 1,
+        ["LightInfluence"] = 0,
+        ["Segments"] = 1,
+        ["TextureLength"] = 5,
+        ["TextureMode"] = Enum.TextureMode.Stretch,
+        ["TextureSpeed"] = 0,
+        ["Width0"] = 0.3,
+        ["Width1"] = 0.3,
+        ["FaceCamera"] = true
+    },
+
+    ["Lightning"] = {
+        ["Texture"] = "rbxassetid://7151778302",
+        ["Brightness"] = 1.5,
+        ["Transparency"] = NewNumberSequence(0.45),
+        ["LightEmission"] = 1,
+        ["LightInfluence"] = 0,
+        ["Segments"] = 10,
+        ["TextureLength"] = 1,
+        ["TextureMode"] = Enum.TextureMode.Stretch,
+        ["TextureSpeed"] = 1,
+        ["Width0"] = 1.2,
+        ["Width1"] = 1.2,
+        ["FaceCamera"] = true
+    },
+
+    ["DNA"] = {
+        ["Texture"] = "rbxassetid://7071778278",
+        ["Brightness"] = 1.5,
+        ["Transparency"] = NewNumberSequence(0.45),
+        ["LightEmission"] = 1,
+        ["LightInfluence"] = 0,
+        ["Segments"] = 1,
+        ["TextureLength"] = 12,
+        ["TextureMode"] = Enum.TextureMode.Wrap,
+        ["TextureSpeed"] = 1,
+        ["Width0"] = 0.6,
+        ["Width1"] = 0.6,
+        ["FaceCamera"] = true
+    }
+}
+
+
+
+local PeekQueue = {}
+local PeekIndex = 1
+local IsPeeking = false
+
+local ReverseTime = false
+local LastTime
+
+local StartTick = Tick()
+
+
+
+
+
+--[[
+	=============================================================
+	菜单层衔接 + 作弊逻辑占位层
+	-------------------------------------------------------------
+	原作里 `Library` / `Flags` / 各功能模块都是文件级 local，
+	菜单构建段（原文件 8411–12567 行）直接引用它们。
+	这里把 UI 库产出的对象接上，并给缺失的功能模块套一层
+	万能占位表：读任何字段都返回新的占位对象，调用它什么都不做。
+	菜单结构因此能和原版一字不差地长出来，回调不会报错。
+	=============================================================
+]]
+
+local Library = Menu.Library
+local Flags = Menu.Flags
+
+-- 原作里靠注入器提供的全局，缺了就用空实现
+local StatsService = GetService(Game, "Stats")
+local TeleportService = GetService(Game, "TeleportService")
+local TextChatService = GetService(Game, "TextChatService")
+local TextChannel = TextChatService and TextChatService.TextChannels and TextChatService.TextChannels.Global or nil
+
+local SetHiddenProperty = (typeof(sethiddenproperty) == "function" and sethiddenproperty) or function() end
+local setfflag = (typeof(setfflag) == "function" and setfflag) or function() end
+local setfpscap = (typeof(setfpscap) == "function" and setfpscap) or function() end
+
+LRM_UserNote = "uid - 1"
+
+do
+	local PlaceholderMeta = {}
+
+	PlaceholderMeta.__index = function(Self, Key)
+		local Value = setmetatable({}, PlaceholderMeta)
+
+		rawset(Self, Key, Value)
+
+		return Value
+	end
+
+	PlaceholderMeta.__newindex = function(Self, Key, Value)
+		rawset(Self, Key, Value)
+	end
+
+	PlaceholderMeta.__call = function()
+		return setmetatable({}, PlaceholderMeta)
+	end
+
+	PlaceholderMeta.__tostring = function() return "" end
+	PlaceholderMeta.__concat = function() return "" end
+	PlaceholderMeta.__len = function() return 0 end
+	PlaceholderMeta.__add = function() return 0 end
+	PlaceholderMeta.__sub = function() return 0 end
+	PlaceholderMeta.__mul = function() return 0 end
+	PlaceholderMeta.__div = function() return 0 end
+	PlaceholderMeta.__mod = function() return 0 end
+	PlaceholderMeta.__pow = function() return 0 end
+	PlaceholderMeta.__unm = function() return 0 end
+	PlaceholderMeta.__eq = function() return false end
+	PlaceholderMeta.__lt = function() return false end
+	PlaceholderMeta.__le = function() return false end
+
+	local Modules = {
+		Info, Esp, Visuals, Camera, Misc, Shared, Tickbase,
+		Mathematics, Pathfinding, Raycasting,
+		Legitbot, Ragebot, Knifebot, AntiAim,
+		SilentAim, AimAssist, TriggerBot, Movement,
+	}
+
+	for i = 1, #Modules do
+		local Module = Modules[i]
+
+		if typeof(Module) == "table" then
+			setmetatable(Module, PlaceholderMeta)
+		end
+	end
+end
+-- Menu Init
+do
+    local Images = Menu.Images
+    local MenuTheme = Menu.Theme
+
+    local NetworkClient = Shared.NetworkClient
+
+    local Environment
+    local Theme
+    local Lua
+    local Activity
+
+    local Dock
+
+    local Tab
+    local Section
+    local MultiSection
+
+    local Tree
+
+    local Watermark
+    local KeybindsList
+
+    local MouseBehaviour
+    local IconEnabled
+
+    local Window = Library:Window({
+        Visible = true,
+        HasTabs = true,
+        Callback = function(Visible)
+            local LocalInfo = Info.LocalPlayer
+
+            if LocalInfo then
+                if LocalInfo.Alive or UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter then
+                    IconEnabled = Visible
+                    MouseBehaviour = Visible and Enum.MouseBehavior.Default or Enum.MouseBehavior.LockCenter
+
+                    return
+                end
+            end
+
+            MouseBehaviour = nil
+        end
+    })
+    do
+        Tab = Window:Tab({
+            Name = "Legit",
+            Opened = true
+        })
+        do
+            Section = Tab:Section({
+                Name = "Aim Assist",
+                Size = 300
+            })
+            do
+                Section:Toggle({
+                    Name = "Enabled",
+                    Flag = "AimAssist Enabled"
+                }):Keybind({
+                    Mode = "On Hold",
+                    Flag = "Aim Assist Keybind",
+                    Name = "Aim Assist"
+                })
+
+                Section:Dropdown({
+                    Name = "Target Selection",
+                    Options = { "Adaptive", "Lock" },
+                    Default = "Adaptive",
+                    Flag = "AimAssist Selection",
+                    Callback = function(Value)
+                        if Value == "Adaptive" then
+                            Flags["AimAssist SwitchDelay"]:Show()
+                        else
+                            Flags["AimAssist SwitchDelay"]:Hide()
+                        end
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Priority Only",
+                    Flag = "AimAssist PriorityOnly"
+                })
+
+                Section:Toggle({
+                    Name = "Require Mouse Movement",
+                    Flag = "AimAssist Require Mouse"
+                })
+
+                Section:Toggle({
+                    Name = "Visible Check",
+                    Flag = "AimAssist VisibleCheck",
+                    Default = true
+                })
+
+                Section:Dropdown({
+                    Name = "Hitboxes",
+                    Options = BodyPartNames,
+                    Default = { "Head" },
+                    Flag = "AimAssist Hitparts"
+                })
+
+                Section:Slider({
+                    Name = "Switch Delay",
+                    Min = 0, Max = 2500, Default = 350,
+                    Prefix = "ms",
+                    Flag = "AimAssist SwitchDelay"
+                })
+
+                Section:Slider({
+                    Name = "Aim Speed",
+                    Min = 1, Max = 5, Default = 2,
+                    Decimals = 0.1,
+                    Prefix = "%",
+                    Flag = "AimAssist Speed"
+                })
+
+                Section:Slider({
+                    Name = "FOV",
+                    Min = 1, Max = 35, Default = 5,
+                    Decimals = 0.1,
+                    Prefix = "°",
+                    Flag = "AimAssist Fov"
+                })
+
+                Section:Slider({
+                    Name = "Max Distance",
+                    Min = 1,
+                    Max = 2000,
+                    Default = 500,
+                    Prefix = "m",
+                    Flag = "AimAssist MaxDistance"
+                })
+            end
+
+            Section = Tab:Section({
+                Name = "Trigger Bot",
+                Size = 229
+            })
+            do
+                Section:Toggle({
+                    Name = "Enabled",
+                    Flag = "TriggerBot Enabled"
+                }):Keybind({
+                    Mode = "Toggle",
+                    Flag = "Triggerbot Keybind",
+                    Name = "Triggerbot"
+                })
+
+                Section:Toggle({
+                    Name = "Priority Only",
+                    Flag = "TriggerBot PriorityOnly"
+                })
+
+                Section:Toggle({
+                    Name = "Use Autowall",
+                    Flag = "TriggerBot AutoWall"
+                })
+
+                Section:Dropdown({
+                    Name = "Hitboxes",
+                    Options = { "Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Closest" },
+                    Default = { "Head" },
+                    Flag = "TriggerBot Hitpart"
+                })
+
+                Section:Slider({
+                    Name = "Shoot Chance",
+                    Min = 1,
+                    Max = 100,
+                    Default = 100,
+                    Prefix = "%",
+                    Flag = "TriggerBot ShootChance"
+                })
+
+                Section:Slider({
+                    Name = "Reaction Time",
+                    Min = 0,
+                    Max = 950,
+                    Default = 115,
+                    Prefix = "ms",
+                    Flag = "TriggerBot Reaction Time"
+                })
+
+                Section:Slider({
+                    Name = "FOV",
+                    Min = 1, Max = 25, Default = 5,
+                    Decimals = 0.1,
+                    Prefix = "°",
+                    Flag = "TriggerBot FOV"
+                })
+
+                Section:Slider({
+                    Name = "Max Distance",
+                    Min = 1,
+                    Max = 2000,
+                    Default = 500,
+                    Prefix = "m",
+                    Flag = "TriggerBot MaxDistance"
+                })
+            end
+
+            Section = Tab:Section({
+                Name = "Silent Aim",
+                Size = 348,
+                Side = "Right"
+            })
+            do
+                Section:Toggle({
+                    Name = "Enabled",
+                    Flag = "SilentAim Enabled"
+                }):Keybind({
+                    Mode = "Toggle",
+                    Flag = "SilentAim Keybind",
+                    Name = "Silent Aim"
+                })
+
+                Section:Toggle({
+                    Name = "Priority Only",
+                    Flag = "SilentAim PriorityOnly"
+                })
+
+                Section:Toggle({
+                    Name = "Use Autowall",
+                    Flag = "SilentAim AutoWall"
+                })
+
+                Section:Dropdown({
+                    Name = "Hitboxes",
+                    Options = { "Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Closest" },
+                    Default = { "Head" },
+                    Flag = "SilentAim Hitpart"
+                })
+
+                Section:Slider({
+                    Name = "Spread Amount",
+                    Min = 0,
+                    Max = 100,
+                    Default = 60,
+                    Prefix = "%",
+                    Flag = "SilentAim Spread Amount"
+                })
+
+                Section:Slider({
+                    Name = "Switch Delay",
+                    Min = 0, Max = 5000, Default = 1250,
+                    Prefix = "ms",
+                    Flag = "SilentAim SwitchDelay"
+                })
+
+                Section:Slider({
+                    Name = "FOV",
+                    Flag = "SilentAim Fov",
+                    Min = 1, Max = 90, Default = 40,
+                    Decimals = 0.1,
+                    Prefix = "°"
+                })
+
+                Section:Slider({
+                    Name = "Max Distance",
+                    Min = 1,
+                    Max = 2000,
+                    Default = 500,
+                    Prefix = "m",
+                    Flag = "SilentAim MaxDistance"
+                })
+
+                Section:Slider({
+                    Name = "Hit Chance",
+                    Min = 1,
+                    Max = 100,
+                    Default = 45,
+                    Prefix = "%",
+                    Flag = "SilentAim Hitchance"
+                })
+            end
+
+            MultiSection = Tab:MultiSection({
+                Name = "Misc",
+                Size = 181,
+                Side = "Right",
+                Sections = { "General", "Gun Mods", "Knife Mods" }
+            })
+            do
+                Section = MultiSection[1]
+                do
+                    Section:Toggle({
+                        Name = "Visualise FOV",
+                        Flag = "Visualise Fov",
+                        Callback = function(Value)
+                            local Circle = Esp["Circle"]
+
+                            if Circle then
+                                Circle.Visible = Value
+                            end
+                        end
+                    }):Colorpicker({
+                        Color = NewRGB(255, 255, 255),
+                        Transparency = 0,
+                        Flag = "Visualise Fov Color",
+                        Callback = function(Color, Transparency)
+                            local Circle = Esp["Circle"]
+
+                            if Circle then
+                                local Stroke = Circle.UIStroke
+
+                                Stroke.Color = Color
+                                Stroke.Transparency = Transparency
+                            end
+                        end
+                    })
+
+                    Section:Slider({
+                        Name = "FOV Amount",
+                        Min = 1, Max = 90, Default = 5,
+                        Decimals = 0.1,
+                        Prefix = "°",
+                        Flag = "Visualise Fov Amount"
+                    })
+                end
+
+                Section = MultiSection[2]
+                do
+                    Section:Toggle({
+                        Name = "Force Hitbox",
+                        Flag = "Gun Force Hitbox",
+                        Unsafe = true
+                    })
+
+                    Section:Dropdown({
+                        Name = "Hitboxes",
+                        Options = BodyPartNames,
+                        Default = { "Head" },
+                        Flag = "Gun Hitboxes"
+                    })
+
+                    Section:Slider({
+                        Name = "Camera Recoil Adjustment",
+                        Flag = "Camera Recoil Adjustment",
+                        Min = 0, Max = 100, Default = 100,
+                        Prefix = "%"
+                    })
+
+                    Section:Slider({
+                        Name = "Weapon Recoil Adjustment",
+                        Flag = "Weapon Recoil Adjustment",
+                        Min = 0, Max = 100, Default = 100,
+                        Prefix = "%"
+                    })
+
+                    Section:Slider({
+                        Name = "Spread Adjustment",
+                        Flag = "Spread Adjustment",
+                        Min = 0, Max = 100, Default = 100,
+                        Prefix = "%"
+                    })
+
+                    Section:Slider({
+                        Name = "Grenade Fuse Time",
+                        Flag = "Grenade Fuse Time",
+                        Min = 0, Max = 15, Default = 5,
+                        Decimals = 0.1,
+                        Prefix = "s"
+                    })
+
+                    Section:Slider({
+                        Name = "Grenade Speed Adjustment",
+                        Flag = "Grenade Speed Adjustment",
+                        Min = 0, Max = 350, Default = 100,
+                        Prefix = "%"
+                    })
+
+                    Section:Toggle({
+                        Name = "No Weapon Sway",
+                        Flag = "No Weapon Sway"
+                    })
+
+                    Section:Toggle({
+                        Name = "Instant Equip",
+                        Flag = "Instant Equip"
+                    })
+
+                    Section:Toggle({
+                        Name = "Instant Unequip",
+                        Flag = "Instant UnEquip"
+                    })
+
+                    Section:Toggle({
+                        Name = "Instant Aim",
+                        Flag = "Instant Aim"
+                    })
+
+                    Section:Toggle({
+                        Name = "Instant Reload",
+                        Flag = "Instant Reload"
+                    })
+
+                    Section:Toggle({
+                        Name = "No ADS Restrictions",
+                        Flag = "No ADS Restrictions"
+                    })
+
+                    Section:Toggle({
+                        Name = "No Scope Overlay",
+                        Flag = "No Scope Overlay"
+                    })
+
+                    Section:Toggle({
+                        Name = "No Scope Sway",
+                        Flag = "No Scope Sway"
+                    })
+                end
+
+                Section = MultiSection[3]
+                do
+                    Section:Toggle({
+                        Name = "Force Hitbox",
+                        Flag = "Knife Force Hitbox",
+                        Unsafe = true
+                    })
+
+                    Section:Dropdown({
+                        Name = "Hitboxes",
+                        Options = BodyPartNames,
+                        Default = { "Head" },
+                        Flag = "Knife Hitboxes"
+                    })
+                end
+            end
+        end
+
+        Tab = Window:Tab({
+            Name = "Rage"
+        })
+        do
+            MultiSection = Tab:MultiSection({
+                Name = "Ragebot",
+                Fill = true,
+                Sections = { "Main", "Misc", "Anti-Aim" }
+            })
+            do
+                Section = MultiSection[1]
+                do
+                    Section:Toggle({
+                        Name = "Enabled",
+                        Unsafe = true,
+                        Flag = "Ragebot Enabled"
+                    }):Keybind({
+                        Mode = "Toggle",
+                        Modes = {"Toggle", "On Hold"},
+                        Flag = "Ragebot Keybind",
+                        Name = "Ragebot"
+                    })
+
+                    Section:Toggle({
+                        Name = "Priority Only",
+                        Flag = "Ragebot Priority Only"
+                    })
+
+                    Section:Dropdown({
+                        Name = "Hitbox",
+                        Flag = "Ragebot Hitscan Point",
+                        Default = "Head",
+                        Options = BodyPartNames,
+                        Min = 1
+                    })
+
+                    Section:Slider({
+                        Name = "Origin Radius",
+                        Flag = "Ragebot Origin Radius",
+                        Min = 2, Max = 15.9, Default = 10,
+                        Decimals = 0.01,
+                        Prefix = "m"
+                    })
+
+                    Section:Slider({
+                        Name = "Origin Scans",
+                        Flag = "Ragebot Origin Points",
+                        Min = 2, Max = 40, Default = 3,
+                        Prefix = "x"
+                    })
+
+                    Section:Slider({
+                        Name = "Hit Radius",
+                        Flag = "Ragebot Point Radius",
+                        Min = 2, Max = 9.9, Default = 7,
+                        Decimals = 0.01,
+                        Prefix = "m"
+                    })
+
+                    Section:Slider({
+                        Name = "Hit Scans",
+                        Flag = "Ragebot Point Points",
+                        Min = 2, Max = 40, Default = 3,
+                        Prefix = "x"
+                    })
+
+                    Section:Slider({
+                        Name = "Maximum Autowall Scans",
+                        Flag = "Ragebot Maximum Scans",
+                        Min = 1, Max = 10000, Default = 10000,
+                        Specials = { { "∞", 10000 } },
+                        Prefix = "x"
+                    })
+
+                    Section:Toggle({
+                        Name = "Auto Peek",
+                        Flag = "Ragebot Auto Peek",
+                        Unsafe = true
+                    })
+
+                    Section:Toggle({
+                        Name = "Force Ground Peek",
+                        Flag = "Ragebot Peek Grounded",
+                        Default = true
+                    })
+
+                    Section:Toggle({
+                        Name = "Allow Up Peek",
+                        Flag = "Ragebot Peek Up Peek",
+                        Indev = true
+                    })
+
+                    Section:Slider({
+                        Name = "Peek Radius",
+                        Flag = "Ragebot Peek Radius",
+                        Min = 5, Max = 500, Default = 50,
+                        Decimals = 0.01,
+                        Prefix = "m"
+                    })
+
+                    Section:Slider({
+                        Name = "Peek Scans",
+                        Flag = "Ragebot Peek Points",
+                        Min = 1, Max = 40, Default = 2,
+                        Prefix = "x"
+                    })
+
+                    Section:Toggle({
+                        Name = "Randomise Peek Radius",
+                        Flag = "Ragebot Fill Peek"
+                    })
+
+                    Section:Toggle({
+                        Name = "Compensate Ping On Retreat",
+                        Flag = "Ragebot Autopeek Compensate Ping",
+                        Default = true
+                    })
+                end
+
+                Section = MultiSection[2]
+                do
+                    Section:Toggle({
+                        Name = "Prevent Overfire",
+                        Flag = "Ragebot Prevent Overfire"
+                    })
+
+                    Section:Dropdown({
+                        Name = "Scanning Modes",
+                        Flag = "Ragebot Scanning Modes",
+                        Default = { "Sphere" },
+                        Options = { "Sphere", "Cardinals", "Random" }
+                    })
+
+                    Section:Dropdown({
+                        Name = "Sorting Mode",
+                        Flag = "Ragebot Sort Mode",
+                        Default = "Highest Damage",
+                        Options = { "Highest Damage", "Lowest Hit", "Lowest Origin", "Most Accurate" }
+                    })
+
+                    Section:Dropdown({
+                        Name = "Backtrack Sorting",
+                        Flag = "Ragebot Backtrack Sorting",
+                        Default = "Reverse Chronological",
+                        Options = { "Chronological", "Reverse Chronological", "Random" },
+                        Min = 1
+                    })
+
+                    Section:Slider({
+                        Name = "Backtrack Time",
+                        Flag = "Ragebot Backtrack Amount",
+                        Min = 100, Max = 4950, Default = 3000,
+                        Prefix = "ms"
+                    })
+
+                    Section:Slider({
+                        Name = "Backtrack Scans",
+                        Flag = "Ragebot Backtrack Scans",
+                        Min = 2, Max = 50, Default = 2,
+                        Prefix = "x"
+                    })
+                end
+
+                Section = MultiSection[3]
+                do
+                    Section:Toggle({
+                        Name = "Fake Position",
+                        Flag = "Fake Position Enabled",
+                        Unsafe = true,
+                        Callback = function(Value)
+                            local LocalInfo = Info.LocalPlayer
+
+                            if not Value and LocalInfo then
+                                LocalInfo.Faked = false
+                            end
+                        end
+                    }):Keybind({
+                        Mode = "Toggle",
+                        Modes = {"Toggle", "On Hold"},
+                        Flag = "Fake Position Keybind",
+                        Name = "Fake Position"
+                    })
+
+                    Section:Toggle({
+                        Name = "Anti Aim Enabled",
+                        Flag = "Anti Aim Enabled",
+                        Unsafe = true
+                    }):Keybind({
+                        Mode = "Toggle",
+                        Modes = {"Toggle", "On Hold"},
+                        Flag = "Anti Aim Keybind",
+                        Name = "Anti Aim"
+                    })
+
+                    Section:Dropdown({
+                        Name = "Pitch",
+                        Default = "None",
+                        Options = { "None", "Full Up", "Normal Up", "Half Up", "Full Down", "Normal Down", "Half Down", "Zero", "Randomise", "Rotate", "Custom" },
+                        Size = 125,
+                        Flag = "Anti Aim Pitch",
+                        Callback = function(Value)
+                            Flags["Anti Aim Custom Pitch"]:Hide()
+                            Flags["Anti Aim Pitch Speed"]:Hide()
+
+                            if Value == "Custom" then
+                                Flags["Anti Aim Custom Pitch"]:Show()
+                            elseif Value == "Rotate" then
+                                Flags["Anti Aim Pitch Speed"]:Show()
+                            end
+                        end
+                    })
+
+                    Section:Dropdown({
+                        Name = "Yaw",
+                        Default = "None",
+                        Options = { "None", "Backwards", "Randomise", "Rotate", "Tweak", "Cycle", "Custom" },
+                        Size = 125,
+                        Flag = "Anti Aim Yaw",
+                        Callback = function(Value)
+                            Flags["Anti Aim Custom Yaw"]:Hide()
+                            Flags["Anti Aim Yaw Speed"]:Hide()
+
+                            if Value == "Custom" then
+                                Flags["Anti Aim Custom Yaw"]:Show()
+                            elseif Value == "Cycle" then
+                                Flags["Anti Aim Yaw Speed"]:Show()
+                            elseif Value == "Rotate" then
+                                Flags["Anti Aim Yaw Speed"]:Show()
+                            end
+                        end
+                    })
+
+                    Section:Slider({
+                        Name = "Custom Pitch",
+                        Flag = "Anti Aim Custom Pitch",
+                        Min = -2, Max = 2, Default = 0,
+                        Prefix = "°",
+                        Decimals = 0.01,
+                        Hidden = true
+                    })
+
+                    Section:Slider({
+                        Name = "Custom Yaw",
+                        Flag = "Anti Aim Custom Yaw",
+                        Min = -180, Max = 180, Default = 0,
+                        Prefix = "°",
+                        Decimals = 0.01,
+                        Hidden = true
+                    })
+
+                    Section:Slider({
+                        Name = "Jitter Amount",
+                        Flag = "Anti Aim Jitter",
+                        Min = 0, Max = 360, Default = 0,
+                        Prefix = "°",
+                        Decimals = 0.01
+                    })
+
+                    Section:Slider({
+                        Name = "Pitch Speed",
+                        Flag = "Anti Aim Pitch Speed",
+                        Min = 1, Max = 50, Default = 10,
+                        Hidden = true
+                    })
+
+                    Section:Slider({
+                        Name = "Yaw Speed",
+                        Flag = "Anti Aim Yaw Speed",
+                        Min = 1, Max = 50, Default = 10,
+                        Hidden = true
+                    })
+
+                    Section:Toggle({
+                        Name = "Freeze Movements",
+                        Flag = "Freeze Movements",
+                        Unsafe = true
+                    }):Keybind({
+                        Mode = "Toggle",
+                        Modes = {"Toggle", "On Hold"},
+                        Flag = "Freeze Movements Keybind",
+                        Name = "Freeze Movements"
+                    })
+
+                    Section:Toggle({
+                        Name = "Tilt Neck",
+                        Flag = "Tilt Neck",
+                        Callback = function(Value)
+                            local LocalInfo = Info.LocalPlayer
+
+                            if LocalInfo.Alive then
+                                NetworkClient:send("aim", Value)
+                            end
+                        end
+                    })
+
+                    Section:Toggle({
+                        Name = "Lower Arms",
+                        Flag = "Lower Arms",
+                        Callback = function(Value)
+                            local LocalInfo = Info.LocalPlayer
+
+                            if LocalInfo.Alive then
+                                NetworkClient:send("sprint", Value)
+                            end
+                        end
+                    })
+
+                    Section:Dropdown({
+                        Name = "Custom Stance",
+                        Default = "None",
+                        Options = { "None", "Stand", "Prone", "Crouch" },
+                        Flag = "Custom Stance",
+                        Callback = function(Value)
+                            local LocalInfo = Info.LocalPlayer
+
+                            if LocalInfo.Alive and Value ~= "None" then
+                                NetworkClient:send("stance", Lower(Value))
+                            end
+                        end
+                    })
+                end
+            end
+
+            Section = Tab:Section({
+                Name = "Knifebot",
+                Fill = true,
+                Side = "Right"
+            })
+            do
+                Section:Toggle({
+                    Name = "Enabled",
+                    Flag = "Knifebot Enabled",
+                    Unsafe = true
+                }):Keybind({
+                    Mode = "Toggle",
+                    Modes = {"Toggle", "On Hold"},
+                    Flag = "TriggerBot Keybind",
+                    Name = "Knifebot"
+                })
+
+                Section:Toggle({
+                    Name = "Priority Only",
+                    Flag = "Knifebot Priority Only"
+                })
+
+                Section:Toggle({
+                    Name = "On Knife Only",
+                    Flag = "Knifebot Knife Only",
+                    Default = true
+                })
+
+                Section:Dropdown({
+                    Name = "Hitbox",
+                    Flag = "Knifebot Hitbox",
+                    Default = "Head",
+                    Options = BodyPartNames
+                })
+
+                Section:Slider({
+                    Name = "Max Range",
+                    Flag = "Knifebot Max Range",
+                    Min = 1,
+                    Max = 25,
+                    Default = 10,
+                    Prefix = "m"
+                })
+            end
+        end
+
+        Tab = Window:Tab({
+            Name = "Visuals"
+        })
+        do
+            MultiSection = Tab:MultiSection({
+                Name = "Player ESP",
+                Size = 309,
+                Sections = { "Team", "Enemy" }
+            })
+            do
+                Section = MultiSection[1]
+                do
+                    Tree = Section:ExpandableToggle({
+                        Name = "Enabled",
+                        Flag = "Esp Enabled",
+                        Category = "Team",
+                        Opened = true,
+                        Size = 227
+                    })
+                    do
+                        Tree:Keybind({
+                            Mode = "Toggle",
+                            Modes = {"Toggle", "On Hold"},
+                            Flag = "Esp Enabled Keybind",
+                            Name = "ESP Enabled"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Name",
+                            Flag = "Esp Name",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Name Color",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Skeleton",
+                            Flag = "Esp Skeleton",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Skeleton Color",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Weapon",
+                            Flag = "Esp Weapon",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Weapon Color",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Distance",
+                            Flag = "Esp Distance",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Distance Color",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Bounding Box",
+                            Flag = "Esp Box",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Flag = "Esp Box Color",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Bounding Box Fill",
+                            Flag = "Esp Box Fill",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0.5,
+                            Flag = "Esp Box Fill Color 1",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 1,
+                            Flag = "Esp Box Fill Color 2",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Bounding Box Glow",
+                            Flag = "Esp Box Glow",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Spin Box Fill",
+                            Flag = "Esp Box Fill Spin",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Health Bar",
+                            Flag = "Esp Health Bar",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(0, 255, 42),
+                            Flag = "Esp Health Color 1",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 0, 0),
+                            Flag = "Esp Health Color 2",
+                            Category = "Team",
+                            Hidden = true
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Health Color 3",
+                            Category = "Team"
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Health Bar Type",
+                            Options = { "Static", "Dynamic", "Gradient" },
+                            Default = "Static",
+                            Flag = "Esp Health Bar Type",
+                            Category = "Team",
+                            Callback = function(Value)
+                                if Value == "Static" then
+                                    Flags["Team"]["Esp Health Color 2"].Hide()
+                                else
+                                    Flags["Team"]["Esp Health Color 2"].Show()
+                                end
+                            end
+                        })
+
+                        Tree:Toggle({
+                            Name = "Exploiting",
+                            Flag = "Esp Exploiting",
+                            Category = "Team"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 0, 0),
+                            Transparency = 0,
+                            Flag = "Esp Exploiting Color",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Priority Only",
+                            Flag = "Esp Priority Only",
+                            Category = "Team"
+                        })
+
+                        Tree:Slider({
+                            Name = "Render Distance",
+                            Flag = "Esp Max Distance",
+                            Category = "Team",
+                            Min = 150, Max = 2000, Default = 400,
+                            Prefix = "m"
+                        })
+
+                        Tree:Slider({
+                            Name = "Refresh Rate",
+                            Category = "Team",
+                            Flag = "Esp Refresh Rate",
+                            Prefix = "hz",
+                            Min = 60, Max = 265, Default = 144
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Out of View",
+                        Flag = "Esp Oov",
+                        Category = "Team",
+                        Size = 178
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Oov Color",
+                            Category = "Team",
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Elements",
+                            Flag = "Esp Oov Elements",
+                            Options = { "Name", "Health Bar", "Distance", "Weapon" },
+                            Default = {},
+                            Category = "Team",
+                            Min = 0
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Style",
+                            Flag = "Esp Oov Style",
+                            Options = { "Normal", "Concave" },
+                            Default = "Concave",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Dynamic Distance",
+                            Flag = "Esp Oov Dynamic Distance",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Dynamic Size",
+                            Flag = "Esp Oov Dynamic Size",
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Arrow Blinking",
+                            Flag = "Esp Oov Blink",
+                            Category = "Team"
+                        })
+
+                        Tree:Slider({
+                            Name = "Blinking Speed",
+                            Flag = "Esp Oov Blink Speed",
+                            Category = "Team",
+                            Min = 1, Max = 4, Default = 1
+                        })
+
+                        Tree:Slider({
+                            Name = "Arrow Distance",
+                            Flag = "Esp Oov Distance",
+                            Category = "Team",
+                            Min = 10, Max = 100, Default = 40,
+                            Prefix = "%"
+                        })
+
+                        Tree:Slider({
+                            Name = "Arrow Size",
+                            Flag = "Esp Oov Size",
+                            Category = "Team",
+                            Prefix = "px",
+                            Min = 10, Max = 50, Default = 13
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Sound ESP",
+                        Flag = "Esp Sound",
+                        Category = "Team",
+                        Size = 42
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Flag = "Esp Sound Color",
+                            Transparency = 0,
+                            Category = "Team"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Through Walls",
+                            Flag = "Esp Sound Through Walls",
+                            Category = "Team",
+                            Default = true
+                        })
+
+                        Tree:Slider({
+                            Name = "Duration",
+                            Flag = "Esp Sound Duration",
+                            Category = "Team",
+                            Prefix = "s",
+                            Min = 0.3, Max = 1.3, Default = 0.5,
+                            Decimals = 0.01
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Chams",
+                        Flag = "Chams Enabled",
+                        Category = "Team",
+                        Size = 42,
+                        Callback = function()
+                            local RenderAllChams = Esp.RenderAllChams
+
+                            if RenderAllChams then
+                                RenderAllChams()
+                            end
+                        end
+                    })
+                    do
+                        Tree:Keybind({
+                            Mode = "Toggle",
+                            Modes = {"Toggle", "On Hold"},
+                            Category = "Team",
+                            Flag = "Chams Enabled Keybind",
+                            Name = "Chams Enabled"
+                        }):Colorpicker({
+                            Color = NewRGB(0, 0, 0),
+                            Transparency = 0.61,
+                            Flag = "Chams Color",
+                            Category = "Team",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        }):Colorpicker({
+                            Color = NewRGB(255, 0, 105),
+                            Transparency = 0.21,
+                            Flag = "Outline Color",
+                            Category = "Team",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+
+                        Tree:Toggle({
+                            Name = "Glow Enabled",
+                            Flag = "Glows Enabled",
+                            Category = "Team",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Glow Size",
+                            Flag = "Glows Size",
+                            Category = "Team",
+                            Min = 1, Max = 2.5, Default = 1.75,
+                            Decimals = 0.01,
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Chams Shading",
+                        Flag = "Chams Shading",
+                        Category = "Team",
+                        Unsafe = true,
+                        Size = 67,
+                        Callback = function(Value)
+                            if Value then
+                                setfflag("AdornShadingAPI", "True")
+                            else
+                                setfflag("AdornShadingAPI", "False")
+                            end
+                        end
+                    })
+                    do
+                        Tree:Dropdown({
+                            Name = "Inline Shade",
+                            Flag = "Inline Shade",
+                            Category = "Team",
+                            Options = { "Default", "Shaded", "XRay", "XRayShaded", "AlwaysOnTop" },
+                            Default = "Default",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Outline Shade",
+                            Flag = "Outline Shade",
+                            Category = "Team",
+                            Options = { "Default", "Shaded", "XRay", "XRayShaded", "AlwaysOnTop" },
+                            Default = "Default",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+                    end
+
+                    Section:Toggle({
+                        Name = "Disable Character Rendering",
+                        Flag = "Disable Teammate Rendering"
+                    })
+                end
+
+                Section = MultiSection[2]
+                do
+                    Tree = Section:ExpandableToggle({
+                        Name = "Enabled",
+                        Flag = "Esp Enabled",
+                        Category = "Enemy",
+                        Opened = true,
+                        Size = 227
+                    })
+                    do
+                        Tree:Keybind({
+                            Mode = "Toggle",
+                            Modes = {"Toggle", "On Hold"},
+                            Flag = "Esp Enabled Keybind",
+                            Name = "ESP Enabled"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Name",
+                            Flag = "Esp Name",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Name Color",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Skeleton",
+                            Flag = "Esp Skeleton",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Skeleton Color",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Weapon",
+                            Flag = "Esp Weapon",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Weapon Color",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Distance",
+                            Flag = "Esp Distance",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Distance Color",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Bounding Box",
+                            Flag = "Esp Box",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Flag = "Esp Box Color",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Bounding Box Fill",
+                            Flag = "Esp Box Fill",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0.5,
+                            Flag = "Esp Box Fill Color 1",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 1,
+                            Flag = "Esp Box Fill Color 2",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Bounding Box Glow",
+                            Flag = "Esp Box Glow",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Spin Box Fill",
+                            Flag = "Esp Box Fill Spin",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Health Bar",
+                            Flag = "Esp Health Bar",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(0, 255, 42),
+                            Flag = "Esp Health Color 1",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 0, 0),
+                            Flag = "Esp Health Color 2",
+                            Category = "Enemy",
+                            Hidden = true
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Health Color 3",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Health Bar Type",
+                            Options = { "Static", "Dynamic", "Gradient" },
+                            Default = "Static",
+                            Flag = "Esp Health Bar Type",
+                            Category = "Enemy",
+                            Callback = function(Value)
+                                if Value == "Static" then
+                                    Flags["Enemy"]["Esp Health Color 2"].Hide()
+                                else
+                                    Flags["Enemy"]["Esp Health Color 2"].Show()
+                                end
+                            end
+                        })
+
+                        Tree:Toggle({
+                            Name = "Exploiting",
+                            Flag = "Esp Exploiting",
+                            Category = "Enemy"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 0, 0),
+                            Transparency = 0,
+                            Flag = "Esp Exploiting Color",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Priority Only",
+                            Flag = "Esp Priority Only",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Slider({
+                            Name = "Render Distance",
+                            Flag = "Esp Max Distance",
+                            Category = "Enemy",
+                            Min = 150, Max = 2000, Default = 400,
+                            Prefix = "m"
+                        })
+
+                        Tree:Slider({
+                            Name = "Refresh Rate",
+                            Category = "Enemy",
+                            Flag = "Esp Refresh Rate",
+                            Prefix = "hz",
+                            Min = 60, Max = 265, Default = 144
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Out of View",
+                        Flag = "Esp Oov",
+                        Category = "Enemy",
+                        Size = 178
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Transparency = 0,
+                            Flag = "Esp Oov Color",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Elements",
+                            Flag = "Esp Oov Elements",
+                            Options = { "Name", "Health Bar", "Distance", "Weapon" },
+                            Default = {},
+                            Category = "Enemy",
+                            Min = 0
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Style",
+                            Flag = "Esp Oov Style",
+                            Options = { "Normal", "Concave" },
+                            Default = "Concave",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Dynamic Distance",
+                            Flag = "Esp Oov Dynamic Distance",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Dynamic Size",
+                            Flag = "Esp Oov Dynamic Size",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Arrow Blinking",
+                            Flag = "Esp Oov Blink",
+                            Category = "Enemy"
+                        })
+
+                        Tree:Slider({
+                            Name = "Blinking Speed",
+                            Flag = "Esp Oov Blink Speed",
+                            Category = "Enemy",
+                            Min = 1, Max = 4, Default = 1
+                        })
+
+                        Tree:Slider({
+                            Name = "Arrow Distance",
+                            Flag = "Esp Oov Distance",
+                            Category = "Enemy",
+                            Min = 10, Max = 100, Default = 40,
+                            Prefix = "%"
+                        })
+
+                        Tree:Slider({
+                            Name = "Arrow Size",
+                            Flag = "Esp Oov Size",
+                            Category = "Enemy",
+                            Prefix = "px",
+                            Min = 10, Max = 50, Default = 13
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Sound ESP",
+                        Flag = "Esp Sound",
+                        Category = "Enemy",
+                        Size = 42
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Flag = "Esp Sound Color",
+                            Transparency = 0,
+                            Category = "Enemy"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Through Walls",
+                            Flag = "Esp Sound Through Walls",
+                            Category = "Enemy",
+                            Default = true
+                        })
+
+                        Tree:Slider({
+                            Name = "Duration",
+                            Flag = "Esp Sound Duration",
+                            Category = "Enemy",
+                            Prefix = "s",
+                            Min = 0.3, Max = 1.3, Default = 0.5,
+                            Decimals = 0.01
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Chams",
+                        Flag = "Chams Enabled",
+                        Category = "Enemy",
+                        Size = 42,
+                        Callback = function()
+                            local RenderAllChams = Esp.RenderAllChams
+
+                            if RenderAllChams then
+                                RenderAllChams()
+                            end
+                        end
+                    })
+                    do
+                        Tree:Keybind({
+                            Mode = "Toggle",
+                            Modes = {"Toggle", "On Hold"},
+                            Category = "Enemy",
+                            Flag = "Chams Enabled Keybind",
+                            Name = "Chams Enabled"
+                        }):Colorpicker({
+                            Color = NewRGB(0, 0, 0),
+                            Transparency = 0.61,
+                            Flag = "Chams Color",
+                            Category = "Enemy",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        }):Colorpicker({
+                            Color = NewRGB(255, 0, 105),
+                            Transparency = 0.21,
+                            Flag = "Outline Color",
+                            Category = "Enemy",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+
+                        Tree:Toggle({
+                            Name = "Glow Enabled",
+                            Flag = "Glows Enabled",
+                            Category = "Enemy",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Glow Size",
+                            Flag = "Glows Size",
+                            Category = "Enemy",
+                            Min = 1, Max = 2.5, Default = 1.75,
+                            Decimals = 0.01,
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Chams Shading",
+                        Flag = "Chams Shading",
+                        Category = "Enemy",
+                        Unsafe = true,
+                        Size = 67,
+                        Callback = function(Value)
+                            if Value then
+                                setfflag("AdornShadingAPI", "True")
+                            else
+                                setfflag("AdornShadingAPI", "False")
+                            end
+                        end
+                    })
+                    do
+                        Tree:Dropdown({
+                            Name = "Inline Shade",
+                            Flag = "Inline Shade",
+                            Category = "Enemy",
+                            Options = { "Default", "Shaded", "XRay", "XRayShaded", "AlwaysOnTop" },
+                            Default = "Default",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Outline Shade",
+                            Flag = "Outline Shade",
+                            Category = "Enemy",
+                            Options = { "Default", "Shaded", "XRay", "XRayShaded", "AlwaysOnTop" },
+                            Default = "Default",
+                            Callback = function()
+                                Esp.RenderAllChams()
+                            end
+                        })
+                    end
+
+                    Section:Toggle({
+                        Name = "Resolve Interpolation",
+                        Flag = "Interpolation Resolver"
+                    })
+                end
+            end
+
+            MultiSection = Tab:MultiSection({
+                Name = "Tracers",
+                Sections = { "Tracers", "Sounds" },
+                Size = 160
+            })
+            do
+                Section = MultiSection[1]
+                do
+                    Section:Toggle({
+                        Name = "Local Tracers Enabled",
+                        Flag = "Local Tracer Enabled"
+                    }):Colorpicker({
+                        Color = NewRGB(155, 255, 88),
+                        Flag = "Local Tracer Color",
+                        Callback = function(NewColor)
+                            Visuals.Cache.LocalBeam.Color = NewColorSequence(NewColor)
+                        end
+                    })
+
+                    Section:Toggle({
+                        Name = "Team Tracers Enabled",
+                        Flag = "Team Tracer Enabled"
+                    }):Colorpicker({
+                        Color = NewRGB(211, 132, 68),
+                        Flag = "Team Tracer Color",
+                        Callback = function(NewColor)
+                            Visuals.Cache.TeamBeam.Color = NewColorSequence(NewColor)
+                        end
+                    })
+
+                    Section:Toggle({
+                        Name = "Enemy Tracers Enabled",
+                        Flag = "Enemy Tracer Enabled"
+                    }):Colorpicker({
+                        Color = NewRGB(68, 131, 211),
+                        Flag = "Enemy Tracer Color",
+                        Callback = function(NewColor)
+                            Visuals.Cache.EnemyBeam.Color = NewColorSequence(NewColor)
+                        end
+                    })
+
+                    Section:Toggle({
+                        Name = "Grenade Tracers Enabled",
+                        Flag = "Grenade Tracer Enabled"
+                    }):Colorpicker({
+                        Color = NewRGB(255, 225, 0),
+                        Flag = "Grenade Tracer Color",
+                        Callback = function(NewColor)
+                            Visuals.Cache.GrenadeBeam.Color = NewColorSequence(NewColor)
+                        end
+                    })
+
+                    Section:Toggle({
+                        Name = "Bullet Impacts Enabled",
+                        Flag = "Bullet Impacts Enabled"
+                    }):Colorpicker({
+                        Color = NewRGB(68, 131, 211),
+                        Flag = "Bullet Impacts Color",
+                        Callback = function(NewColor)
+                            Visuals.Cache.Impact.Color = NewColor
+                        end
+                    })
+
+                    Section:Dropdown({
+                        Name = "Tracer Texture",
+                        Flag = "Tracer Texture",
+                        Options = { "Obelus", "Lightning", "DNA" },
+                        Default = "Lightning",
+                        Callback = function(Tracer)
+                            local Cache = Visuals.Cache
+
+                            if Cache then
+                                local LocalBeam = Cache.LocalBeam
+                                local EnemyBeam = Cache.EnemyBeam
+                                local TeamBeam = Cache.TeamBeam
+
+                                for Index, Value in next, TracerProperties[Tracer] do
+                                    LocalBeam[Index] = Value
+                                    EnemyBeam[Index] = Value
+                                    TeamBeam[Index] = Value
+                                end
+                            end
+                        end
+                    })
+
+                    Section:Slider({
+                        Name = "Tracer Lifetime",
+                        Flag = "Tracer Time",
+                        Min = 0.5, Max = 10, Default = 4,
+                        Prefix = "s",
+                        Callback = function(Value)
+                            Visuals.Cache.GrenadeBeam.Lifetime = Value
+                        end
+                    })
+                end
+
+                Section = MultiSection[2]
+                do
+                    Tree = Section:ExpandableToggle({
+                        Name = "Hitsound",
+                        Flag = "Hitsound Enabled",
+                        Size = 78,
+                        Opened = true
+                    })
+                    do
+                        Tree:Dropdown({
+                            Name = "Sound",
+                            Flag = "Hitsound",
+                            Options = { "Disabled" },
+                            Default = "Disabled",
+                            Size = 125,
+                            Callback = function(Value, Config)
+                                local Hitsound = Visuals.Cache.Hitsound
+                                local SoundId = HitsoundIds[Value] or ""
+
+                                if Hitsound.SoundId == SoundId then return end
+
+                                Hitsound.SoundId = SoundId
+
+                                if Value == "Disabled" or Config then return end
+
+                                local Cloned = Clone(Hitsound)
+                                Cloned.Parent = CurrentCamera
+
+                                Destroy(Cloned)
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Volume",
+                            Flag = "Hitsound Volume",
+                            Min = 1, Max = 300, Default = 100,
+                            Decimals = 0.01,
+                            Prefix = "%",
+                            Callback = function(Value)
+                                Visuals.Cache.Hitsound.Volume = (Value / 100)
+                            end
+                        })
+
+                        Tree:Button({
+                            Name = "Refresh Hitsounds",
+                            Callback = function()
+                                Misc.RefreshHitsounds()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Killsound",
+                        Flag = "Killsound Enabled",
+                        Size = 78,
+                        Opened = true
+                    })
+                    do
+                        Tree:Dropdown({
+                            Name = "Sound",
+                            Flag = "Killsound",
+                            Options = { "Disabled" },
+                            Default = "Disabled",
+                            Size = 125,
+                            Callback = function(Value, Config)
+                                local Killsound = Visuals.Cache.Killsound
+                                local SoundId = KillsoundIds[Value] or ""
+
+                                if Killsound.SoundId == SoundId then return end
+
+                                Killsound.SoundId = SoundId
+
+                                if Value == "Disabled" or Config then return end
+
+                                local Cloned = Clone(Killsound)
+                                Cloned.Parent = CurrentCamera
+
+                                Destroy(Cloned)
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Volume",
+                            Flag = "Killsound Volume",
+                            Min = 1, Max = 300, Default = 100,
+                            Decimals = 0.01,
+                            Prefix = "%",
+                            Callback = function(Value)
+                                Visuals.Cache.Killsound.Volume = (Value / 100)
+                            end
+                        })
+
+                        Tree:Button({
+                            Name = "Refresh Killsounds",
+                            Callback = function()
+                                Misc.RefreshKillsounds()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Shoot Sound",
+                        Flag = "Custom ShootSound",
+                        Size = 123
+                    })
+                    do
+                        Tree:Toggle({
+                            Name = "Play Original",
+                            Flag = "ShootSound Play Original",
+                            Default = true
+                        })
+
+                        Tree:Slider({
+                            Name = "Original Volume",
+                            Flag = "ShootSound Original Volume",
+                            Min = 1, Max = 100, Default = 100,
+                            Decimals = 0.01,
+                            Prefix = "%"
+                        })
+
+                        Tree:Slider({
+                            Name = "Shoot Sound Volume",
+                            Flag = "ShootSound Volume",
+                            Min = 1, Max = 100, Default = 100,
+                            Decimals = 0.01,
+                            Prefix = "%",
+                            Callback = function(Value)
+                                Visuals.Cache.ShootSound.Volume = (Value / 100)
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Shoot Sound Speed",
+                            Flag = "ShootSound Speed",
+                            Min = 1, Max = 5, Default = 1,
+                            Decimals = 0.1,
+                            Callback = function(Value)
+                                Visuals.Cache.ShootSound.PlaybackSpeed = Value
+                            end
+                        })
+
+                        Tree:TextBox({
+                            Name = "Shoot Sound ID",
+                            Flag = "ShootSound Id",
+                            Default = "",
+                            Placeholder = "rbxassetid://",
+                            Callback = function(Value)
+                                local SoundId = ""
+                                local Found = Match(Value, "%d+")
+
+                                if Found then
+                                    Visuals.Cache.ShootSound.SoundId = Format("rbxassetid://%s", Found)
+                                end
+
+                                Visuals.Cache.ShootSound.SoundId = SoundId
+                            end
+                        })
+                    end
+                end
+            end
+
+            Section = Tab:Section({
+                Name = "Targeting",
+                Size = 56
+            })
+            do
+                Section:Toggle({
+                    Name = "Priority Color",
+                    Flag = "Priority Color Enabled",
+                    Default = true
+                }):Colorpicker({
+                    Flag = "Priority Color",
+                    Color = NewRGB(255, 210, 0)
+                })
+
+                Section:Toggle({
+                    Name = "Whitelist Color",
+                    Flag = "Whitelist Color Enabled",
+                    Default = true
+                }):Colorpicker({
+                    Flag = "Whitelist Color",
+                    Color = NewRGB(0, 255, 255)
+                })
+            end
+
+            Section = Tab:Section({
+                Name = "World ESP",
+                Size = 329,
+                Side = "Right"
+            })
+            do
+                Section:Toggle({
+                    Name = "Custom Ambience",
+                    Flag = "Ambience",
+                    Callback = function()
+                        Visuals.World()
+                    end
+                }):Colorpicker({
+                    Flag = "Ambience Color 1",
+                    Color = NewRGB(117, 76, 236),
+                    Callback = function()
+                        Visuals.World()
+                    end
+                }):Colorpicker({
+                    Flag = "Ambience Color 2",
+                    Color = NewRGB(117, 76, 236),
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Custom Colorshift",
+                    Flag = "Colorshift",
+                    Callback = function()
+                        Visuals.World()
+                    end
+                }):Colorpicker({
+                    Flag = "Colorshift Color 1",
+                    Color = NewRGB(255, 0, 0),
+                    Callback = function()
+                        Visuals.World()
+                    end
+                }):Colorpicker({
+                    Flag = "Colorshift Color 2",
+                    Color = NewRGB(255, 0, 0),
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Custom Exposure",
+                    Flag = "Exposure",
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Slider({
+                    Name = "Exposure Amount",
+                    Flag = "Exposure Amount",
+                    Min = -2, Max = 3, Default = 0,
+                    Decimals = 0.01,
+                    Prefix = "%",
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Custom Time",
+                    Flag = "Time",
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Slider({
+                    Name = "Time",
+                    Flag = "Time Factor",
+                    Min = 0, Max = 24, Default = 12,
+                    Prefix = "hr",
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Shadows Enabled",
+                    Flag = "Shadows",
+                    Default = true,
+                    Callback = function(Value)
+                        Lighting.GlobalShadows = Value
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Bloom Enabled",
+                    Flag = "Bloom",
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Slider({
+                    Name = "Bloom Intensity",
+                    Flag = "Bloom Intensity",
+                    Min = 0, Max = 100, Default = 15,
+                    Decimals = 0.1,
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Slider({
+                    Name = "Bloom Size",
+                    Flag = "Bloom Size",
+                    Min = 0, Max = 100, Default = 15,
+                    Decimals = 0.1,
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Slider({
+                    Name = "Bloom Threshold",
+                    Flag = "Bloom Threshold",
+                    Min = 0, Max = 100, Default = 100,
+                    Decimals = 0.1,
+                    Callback = function()
+                        Visuals.World()
+                    end
+                })
+
+                Section:Dropdown({
+                    Name = "Lighting Technology",
+                    Flag = "Lighting Technology",
+                    Default = "Voxel",
+                    Options = { "Legacy", "Voxel", "Compatibility", "ShadowMap", "Future", "Unified" },
+                    Callback = function(Value)
+                        SetHiddenProperty(Lighting, "Technology", Value)
+                    end
+                })
+
+                Section:Dropdown({
+                    Name = "Lighting Style",
+                    Flag = "Lighting Style",
+                    Default = "Soft",
+                    Options = { "Soft", "Realistic" },
+                    Callback = function(Value)
+                        Lighting.LightingStyle = Value
+                    end
+                })
+
+                Section:Dropdown({
+                    Name = "Skybox",
+                    Flag = "Custom Skybox",
+                    Options = { "Default", "Nebula", "Blue Nebula", "Setting Hills", "Blue Aurora", "Red Aurora", "Pink Vision", "Twillight", "Distopia", "Peaceful" },
+                    Default = "Default",
+                    Size = 125,
+                    Callback = function()
+                        Visuals.Sky()
+                    end
+                })
+            end
+
+            MultiSection = Tab:MultiSection({
+                Name = "Others",
+                Size = 200,
+                Side = "Right",
+                Sections = { "Local", "3D", "Third-Person" }
+            })
+            do
+                Section = MultiSection[1]
+                do
+                    Tree = Section:ExpandableToggle({
+                        Name = "Local Chams",
+                        Flag = "Local Chams",
+                        Size = 91,
+                        Callback = function()
+                            Visuals.LocalChams()
+                        end
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = MenuTheme.Accent.A,
+                            Transparency = 0,
+                            Flag = "Local Chams Color",
+                            Callback = function()
+                                Visuals.LocalChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Material",
+                            Flag = "Local Chams Material",
+                            Options = { "Plastic", "SmoothPlastic", "Neon", "Wood", "WoodPlanks", "Marble", "Slate", "Concrete", "Granite", "Brick", "Pebble", "Cobblestone", "Rock", "Sandstone", "Basalt", "CrackedLava", "Limestone", "Pavement", "CorrodedMetal", "DiamondPlate", "Foil", "Metal", "Grass", "LeafyGrass", "Sand", "Fabric", "Snow", "Mud", "Ground", "Asphalt", "Salt", "Ice", "Glacier", "Glass", "ForceField", "Cardboard", "Carpet", "Leather", "Plaster", "Rubber" },
+                            Default = "Plastic",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.LocalChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Animation",
+                            Flag = "Local Chams Animation",
+                            Options = { "Disabled", "Webbed", "Pixelated", "Swirl", "Shield", "Bubbles", "Matrix", "Honeycomb", "Clouds", "Galaxy", "Stars", "Wires", "Camo", "Hexagon", "Particles", "Triangular", "Wall", "Scanning" },
+                            Default = "Disabled",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.LocalChams()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Reflectance",
+                            Flag = "Local Chams Reflectance",
+                            Min = 0, Max = 1, Decimals = 0.01,
+                            Default = 0,
+                            Callback = function()
+                                Visuals.LocalChams()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Sleeve Chams",
+                        Flag = "Sleeve Chams",
+                        Size = 91,
+                        Callback = function()
+                            Visuals.ViewModelChams()
+                        end
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = MenuTheme.Accent.A,
+                            Transparency = 0,
+                            Flag = "Sleeve Chams Color",
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Material",
+                            Flag = "Sleeve Chams Material",
+                            Options = { "Plastic", "SmoothPlastic", "Neon", "Wood", "WoodPlanks", "Marble", "Slate", "Concrete", "Granite", "Brick", "Pebble", "Cobblestone", "Rock", "Sandstone", "Basalt", "CrackedLava", "Limestone", "Pavement", "CorrodedMetal", "DiamondPlate", "Foil", "Metal", "Grass", "LeafyGrass", "Sand", "Fabric", "Snow", "Mud", "Ground", "Asphalt", "Salt", "Ice", "Glacier", "Glass", "ForceField", "Cardboard", "Carpet", "Leather", "Plaster", "Rubber" },
+                            Default = "Plastic",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Animation",
+                            Flag = "Sleeve Chams Animation",
+                            Options = { "Disabled", "Webbed", "Pixelated", "Swirl", "Shield", "Bubbles", "Matrix", "Honeycomb", "Clouds", "Galaxy", "Stars", "Wires", "Camo", "Hexagon", "Particles", "Triangular", "Wall", "Scanning" },
+                            Default = "Disabled",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Reflectance",
+                            Flag = "Sleeve Chams Reflectance",
+                            Min = 0, Max = 1, Decimals = 0.01,
+                            Default = 0,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Skin Tone Chams",
+                        Flag = "Skin Tone Chams",
+                        Size = 91,
+                        Callback = function()
+                            Visuals.ViewModelChams()
+                        end
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = MenuTheme.Accent.A,
+                            Transparency = 0,
+                            Flag = "Skin Tone Chams Color",
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Material",
+                            Flag = "Skin Tone Chams Material",
+                            Options = { "Plastic", "SmoothPlastic", "Neon", "Wood", "WoodPlanks", "Marble", "Slate", "Concrete", "Granite", "Brick", "Pebble", "Cobblestone", "Rock", "Sandstone", "Basalt", "CrackedLava", "Limestone", "Pavement", "CorrodedMetal", "DiamondPlate", "Foil", "Metal", "Grass", "LeafyGrass", "Sand", "Fabric", "Snow", "Mud", "Ground", "Asphalt", "Salt", "Ice", "Glacier", "Glass", "ForceField", "Cardboard", "Carpet", "Leather", "Plaster", "Rubber" },
+                            Default = "Plastic",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Animation",
+                            Flag = "Skin Tone Chams Animation",
+                            Options = { "Disabled", "Webbed", "Pixelated", "Swirl", "Shield", "Bubbles", "Matrix", "Honeycomb", "Clouds", "Galaxy", "Stars", "Wires", "Camo", "Hexagon", "Particles", "Triangular", "Wall", "Scanning" },
+                            Default = "Disabled",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Reflectance",
+                            Flag = "Skin Tone Chams Reflectance",
+                            Min = 0, Max = 1, Decimals = 0.01,
+                            Default = 0,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Accessory Chams",
+                        Flag = "Accessory Chams",
+                        Size = 91,
+                        Callback = function()
+                            Visuals.ViewModelChams()
+                        end
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = MenuTheme.Accent.A,
+                            Transparency = 0,
+                            Flag = "Accessory Chams Color",
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Material",
+                            Flag = "Accessory Chams Material",
+                            Options = { "Plastic", "SmoothPlastic", "Neon", "Wood", "WoodPlanks", "Marble", "Slate", "Concrete", "Granite", "Brick", "Pebble", "Cobblestone", "Rock", "Sandstone", "Basalt", "CrackedLava", "Limestone", "Pavement", "CorrodedMetal", "DiamondPlate", "Foil", "Metal", "Grass", "LeafyGrass", "Sand", "Fabric", "Snow", "Mud", "Ground", "Asphalt", "Salt", "Ice", "Glacier", "Glass", "ForceField", "Cardboard", "Carpet", "Leather", "Plaster", "Rubber" },
+                            Default = "Plastic",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Animation",
+                            Flag = "Accessory Chams Animation",
+                            Options = { "Disabled", "Webbed", "Pixelated", "Swirl", "Shield", "Bubbles", "Matrix", "Honeycomb", "Clouds", "Galaxy", "Stars", "Wires", "Camo", "Hexagon", "Particles", "Triangular", "Wall", "Scanning" },
+                            Default = "Disabled",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Reflectance",
+                            Flag = "Accessory Chams Reflectance",
+                            Min = 0, Max = 1, Decimals = 0.01,
+                            Default = 0,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "ViewModel Chams",
+                        Flag = "ViewModel Chams",
+                        Size = 91,
+                        Callback = function()
+                            Visuals.ViewModelChams()
+                        end
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = MenuTheme.Accent.A,
+                            Transparency = 0,
+                            Flag = "ViewModel Chams Color",
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Material",
+                            Flag = "ViewModel Chams Material",
+                            Options = { "Plastic", "SmoothPlastic", "Neon", "Wood", "WoodPlanks", "Marble", "Slate", "Concrete", "Granite", "Brick", "Pebble", "Cobblestone", "Rock", "Sandstone", "Basalt", "CrackedLava", "Limestone", "Pavement", "CorrodedMetal", "DiamondPlate", "Foil", "Metal", "Grass", "LeafyGrass", "Sand", "Fabric", "Snow", "Mud", "Ground", "Asphalt", "Salt", "Ice", "Glacier", "Glass", "ForceField", "Cardboard", "Carpet", "Leather", "Plaster", "Rubber" },
+                            Default = "Plastic",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Dropdown({
+                            Name = "Animation",
+                            Flag = "ViewModel Chams Animation",
+                            Options = { "Disabled", "Webbed", "Pixelated", "Swirl", "Shield", "Bubbles", "Matrix", "Honeycomb", "Clouds", "Galaxy", "Stars", "Wires", "Camo", "Hexagon", "Particles", "Triangular", "Wall", "Scanning" },
+                            Default = "Disabled",
+                            Size = 125,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "Reflectance",
+                            Flag = "ViewModel Chams Reflectance",
+                            Min = 0, Max = 1, Decimals = 0.01,
+                            Default = 0,
+                            Callback = function()
+                                Visuals.ViewModelChams()
+                            end
+                        })
+                    end
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "ViewModel Offsets",
+                        Flag = "ViewModel Offsets",
+                        Size = 162
+                    })
+                    do
+                        Tree:Toggle({
+                            Name = "Disable On Aim",
+                            Flag = "ViewModel Disable On Aim",
+                            Default = true
+                        })
+
+                        Tree:Slider({
+                            Name = "X",
+                            Flag = "ViewModel X Offset",
+                            Min = -3, Max = 3, Default = 0,
+                            Decimals = 0.1,
+                            Prefix = "m"
+                        })
+
+                        Tree:Slider({
+                            Name = "Y",
+                            Flag = "ViewModel Y Offset",
+                            Min = -3, Max = 3, Default = 0,
+                            Decimals = 0.1,
+                            Prefix = "m"
+                        })
+
+                        Tree:Slider({
+                            Name = "Z",
+                            Flag = "ViewModel Z Offset",
+                            Min = -3, Max = 3, Default = 0,
+                            Decimals = 0.1,
+                            Prefix = "m"
+                        })
+
+                        Tree:Slider({
+                            Name = "Pitch",
+                            Flag = "ViewModel Pitch",
+                            Min = -180, Max = 180, Default = 0,
+                            Prefix = "°"
+                        })
+
+                        Tree:Slider({
+                            Name = "Yaw",
+                            Flag = "ViewModel Yaw",
+                            Min = -180, Max = 180, Default = 0,
+                            Prefix = "°"
+                        })
+
+                        Tree:Slider({
+                            Name = "Roll",
+                            Flag = "ViewModel Roll",
+                            Min = -180, Max = 180, Default = 0,
+                            Prefix = "°"
+                        })
+                    end
+
+                    Section:Toggle({
+                        Name = "No Camera Bob",
+                        Flag = "No Camera Bob"
+                    })
+
+                    Section:Toggle({
+                        Name = "No Camera Suppression",
+                        Flag = "No Camera Suppression"
+                    })
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Custom Camera FOV",
+                        Flag = "Visuals Custom Fov",
+                        Size = 42,
+                        Callback = function()
+                            Camera.UpdateFOV()
+                        end
+                    })
+                    do
+                        Tree:Toggle({
+                            Name = "Disable On Aim",
+                            Flag = "Visuals Fov Disable Aim",
+                            Default = true,
+                            Callback = function()
+                                Camera.UpdateFOV()
+                            end
+                        })
+
+                        Tree:Slider({
+                            Name = "FOV",
+                            Flag = "Visuals Custom Fov Factor",
+                            Min = 70, Max = 120, Default = 90,
+                            Prefix = "°",
+                            Callback = function()
+                                Camera.UpdateFOV()
+                            end
+                        })
+                    end
+
+                    Section:Toggle({
+                        Name = "Zoom",
+                        Flag = "Zoom",
+                        Callback = function(Value)
+                            CurrentCamera.FieldOfView = (Value and (20 / Flags["Zoom Multiplier"].Value) or 70)
+                        end
+                    }):Keybind({
+                        Mode = "On Hold",
+                        Flag = "Zoom Keybind",
+                        Name = "Zoom"
+                    })
+
+                    Section:Slider({
+                        Name = "Zoom Multiplier",
+                        Flag = "Zoom Multiplier",
+                        Min = 1, Max = 3, Default = 1,
+                        Decimals = 0.01,
+                        Prefix = "x"
+                    })
+                end
+
+                Section = MultiSection[2]
+                do
+                    Tree = Section:ExpandableToggle({
+                        Name = "Dropped Weapons",
+                        Flag = "Dropped Weapon ESP",
+                        Size = 66,
+                        Opened = true
+                    })
+                    do
+                        Tree:Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Flag = "Dropped Weapon Color"
+                        })
+
+                        Tree:Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Flag = "Dropped Weapon Bar Color"
+                        })
+
+                        Tree:Toggle({
+                            Name = "Distance",
+                            Flag = "Dropped Weapon Distance"
+                        }):Colorpicker({
+                            Color = NewRGB(255, 255, 255),
+                            Flag = "Dropped Weapon Distance Color"
+                        })
+
+                        Tree:Slider({
+                            Name = "Render Distance",
+                            Flag = "Dropped Weapon Max Distance",
+                            Min = 20, Max = 2000, Default = 150,
+                            Prefix = "m"
+                        })
+
+                        Tree:Slider({
+                            Name = "Refresh Rate",
+                            Flag = "Dropped Weapon Refresh Rate",
+                            Prefix = "hz",
+                            Min = 60, Max = 265, Default = 100
+                        })
+                    end
+
+                    Section:Toggle({
+                        Name = "Firerate Bar",
+                        Flag = "FireRate Bar"
+                    }):Colorpicker({
+                        Color = NewRGB(255, 255, 255),
+                        Flag = "FireRate Bar Color"
+                    })
+
+                    Section:Toggle({
+                        Name = "Penetration Crosshair",
+                        Flag = "Penetration Crosshair",
+                        Callback = function(Value)
+                            local Crosshair = Visuals.Crosshair
+
+                            if Crosshair then
+                                Crosshair.Visible = Value
+                            end
+                        end
+                    }):Colorpicker({
+                        Color = NewRGB(255, 0, 0),
+                        Flag = "Penetration Crosshair Color 1"
+                    }):Colorpicker({
+                        Color = NewRGB(0, 255, 0),
+                        Flag = "Penetration Crosshair Color 2"
+                    })
+
+                    Section:Toggle({
+                        Name = "Visualise Fake Position",
+                        Flag = "Visualise Fake Position"
+                    }):Colorpicker({
+                        Flag = "Visualise Fake Position Bar Color",
+                        Color = NewRGB(255, 255, 255)
+                    }):Colorpicker({
+                        Flag = "Visualise Fake Position Text Color",
+                        Color = NewRGB(255, 255, 255)
+                    })
+                end
+
+                Section = MultiSection[3]
+                do
+                    Section:Toggle({
+                        Name = "Enabled",
+                        Flag = "Third Person Enabled"
+                    }):Keybind({
+                        Mode = "Toggle",
+                        Modes = {"Toggle", "On Hold"},
+                        Flag = "Third Person Keybind",
+                        Name = "Third Person"
+                    })
+
+                    Section:Toggle({
+                        Name = "Render Weapon",
+                        Flag = "Third Person Weapon",
+                        Default = true
+                    })
+
+                    Tree = Section:ExpandableToggle({
+                        Name = "Clip Camera",
+                        Flag = "Third Person Clip",
+                        Size = 53,
+                        Opened = true,
+                        Default = true
+                    })
+                    do
+                        Tree:Slider({
+                            Name = "Minimum",
+                            Flag = "Third Person Minimum",
+                            Min = 1, Max = 10, Default = 3,
+                            Decimals = 0.1,
+                            Prefix = "m"
+                        })
+
+                        Tree:Slider({
+                            Name = "Maximum",
+                            Flag = "Third Person Maximum",
+                            Min = 1, Max = 20, Default = 8,
+                            Decimals = 0.1,
+                            Prefix = "m"
+                        })
+                    end
+                end
+            end
+        end
+
+        Tab = Window:Tab({
+            Name = "Misc"
+        })
+        do
+            Section = Tab:Section({
+                Name = "Primary",
+                Fill = true
+            })
+            do
+                Section:Toggle({
+                    Name = "Walkspeed Enabled",
+                    Flag = "WalkSpeed Enabled",
+                    Callback = function(Value)
+                        local LocalInfo = Info.LocalPlayer
+
+                        if LocalInfo then
+                            local Character = LocalInfo.Character
+
+                            if Character then
+                                Character:setBaseWalkSpeed(Value and Flags["WalkSpeed Value"].Value or 14)
+                            end
+                        end
+                    end
+                }):Keybind({
+                    Mode = "Toggle",
+                    Modes = {"Toggle", "On Hold"},
+                    Flag = "WS Keybind",
+                    Name = "Walk Speed"
+                })
+
+                Section:Slider({
+                    Name = "Walk Speed Value",
+                    Min = 1,
+                    Max = 750,
+                    Default = 16,
+                    Flag = "WalkSpeed Value",
+                    Callback = function(Value)
+                        local LocalInfo = Info.LocalPlayer
+
+                        if LocalInfo then
+                            local Character = LocalInfo.Character
+
+                            if Character then
+                                Character:setBaseWalkSpeed(Flags["WalkSpeed Enabled"].Value and Value or 14)
+                            end
+                        end
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Fly Enabled",
+                    Flag = "Fly Enabled"
+                }):Keybind({
+                    Mode = "Toggle",
+                    Modes = {"Toggle", "On Hold"},
+                    Flag = "Fly Keybind",
+                    Name = "Fly Enabled"
+                })
+
+                Section:Slider({
+                    Name = "Fly Speed",
+                    Min = 16,
+                    Max = 250,
+                    Default = 16,
+                    Prefix = " m/s",
+                    Flag = "Fly Speed"
+                })
+
+                Section:Toggle({
+                    Name = "Bunny-hop Enabled",
+                    Flag = "Bunny Hop Enabled"
+                })
+
+                Section:Toggle({
+                    Name = "Air Strafe Enabled",
+                    Flag = "Air Strafe Enabled"
+                })
+
+                Section:Slider({
+                    Name = "Air Strafe Value",
+                    Min = 1,
+                    Max = 100,
+                    Default = 40,
+                    Prefix = "%",
+                    Flag = "Air Strafe Boost"
+                })
+
+                Section:Toggle({
+                    Name = "Slow Walk",
+                    Flag = "Slow Walk Enabled"
+                }):Keybind({
+                    Mode = "On Hold",
+                    Modes = {"Toggle", "On Hold"},
+                    Flag = "Slow Walk Keybind",
+                    Name = "Slow Walk"
+                })
+
+                Section:Slider({
+                    Name = "Slow Walk Value",
+                    Min = 1,
+                    Max = 100,
+                    Default = 40,
+                    Prefix = "%",
+                    Flag = "Slow Walk Speed"
+                })
+
+                Section:Toggle({
+                    Name = "Assist In-air Despawns",
+                    Flag = "Assist Air Despawns"
+                })
+
+                Section:Toggle({
+                    Name = "Remove Fall Damage",
+                    Flag = "Remove Fall Damage"
+                })
+
+                Section:Toggle({
+                    Name = "Speed Bypass",
+                    Flag = "Speed Bypass",
+                    Unsafe = true
+                })
+
+                Section:Toggle({
+                    Name = "Spawn Immunity",
+                    Flag = "Spawn Immunity"
+                })
+
+                Section:Slider({
+                    Name = "Immunity Time",
+                    Min = 1, Max = 20, Default = 4,
+                    Decimals = 0.1,
+                    Prefix = "s",
+                    Flag = "Spawn Immunity Time"
+                })
+            end
+
+            Section = Tab:Section({
+                Name = "Secondary",
+                Side = "Right",
+                Fill = true
+            })
+            do
+                Section:Dropdown({
+                    Name = "Event Logs",
+                    Default = {},
+                    Options = { "Ragebot Peek", "Ragebot Collat", "Bullet Hit", "Melee Hit", "Grenade Hit", "Server Corrections", "Server Flags" },
+                    Flag = "Event Logs",
+                    Min = 0
+                })
+
+                Section:Slider({
+                    Name = "Time",
+                    Min = 0.5,
+                    Max = 5,
+                    Default = 2,
+                    Decimals = 0.1,
+                    Prefix = "s",
+                    Flag = "Event Logs Time"
+                })
+
+                Section:Toggle({
+                    Name = "Force Character Rendering",
+                    Flag = "Force Character Rendering",
+                    Default = true
+                })
+
+                Section:Toggle({
+                    Name = "Staff Detector",
+                    Flag = "Staff Detector",
+                    Callback = function(Value)
+                        if not Value then return end
+
+                        Info.CheckAllStaff()
+                    end
+                })
+
+                Section:Toggle({
+                    Name = "Kill Say",
+                    Flag = "Kill Say"
+                })
+
+                Section:Toggle({
+                    Name = "Vote Kick On Death",
+                    Flag = "Vote Kick On Death"
+                })
+
+                Section:Toggle({
+                    Name = "Hop on Vote Kick",
+                    Flag = "Hop Vote Kick"
+                })
+
+                Section:Toggle({
+                    Name = "Automatic Vote Kick",
+                    Flag = "Automatic Vote Kick"
+                })
+
+                Section:Dropdown({
+                    Name = "Vote Kick Mode",
+                    Options = { "Yes", "Dismiss", "No" },
+                    Default = "Yes",
+                    Flag = "Vote Kick Mode"
+                })
+
+                Section:Button({
+                    Name = "Refresh Killsay",
+                    Callback = function()
+                        Misc.RefreshKillSay()
+                    end
+                })
+
+                Section:Button({
+                    Name = "Re-join Server",
+                    Confirm = true,
+                    Callback = function()
+                        TeleportService:TeleportToPlaceInstance(Game.PlaceId, Game.JobId)
+                    end
+                })
+
+                Section:Button({
+                    Name = "Hop Server",
+                    Confirm = true,
+                    Callback = function()
+                        Misc.HopServer()
+                    end
+                })
+            end
+        end
+
+        Tab = Window:Tab({
+            Name = "Settings"
+        })
+        do
+            Section = Tab:Section({
+                Name = "Settings",
+                Fill = true
+            })
+            do
+                Section:Toggle({
+                    Name = "Dock Enabled",
+                    Flag = "Dock Enabled",
+                    Default = true,
+                    Callback = function(Value)
+                        if Dock then
+                            Dock.Enable(Value)
+                        end
+                    end
+                }):Keybind({
+                    Default = Enum.KeyCode.Insert,
+                    Modes = {},
+                    Mode = "Toggle",
+                    Flag = "Dock Keybind",
+                    ExcludeList = true
+                })
+
+                Section:Label({
+                    Text = "Menu Key"
+                }):Keybind({
+                    Default = Enum.KeyCode.RightAlt,
+                    Modes = {},
+                    Mode = "Toggle",
+                    Flag = "Menu Keybind",
+                    ExcludeList = true,
+                    Changed = function(Value)
+                        local InputName = Value[2]
+
+                        Window.Key = InputName and Enum[Value[1]][InputName]
+                    end
+                })
+
+                Section:Label({
+                    Text = "Additional Menu Key"
+                }):Keybind({
+                    Default = {},
+                    Modes = {},
+                    Mode = "Toggle",
+                    Flag = "Additional Menu Keybind",
+                    ExcludeList = true,
+                    Changed = function(Value)
+                        local InputName = Value[2]
+                        local Keybind = InputName and Enum[Value[1]][InputName]
+
+                        Environment.Key = Keybind
+                        Theme.Key = Keybind
+                        Lua.Key = Keybind
+                        Activity.Key = Keybind
+                    end
+                })
+
+                Section:Slider({
+                    Name = "FPS Limit",
+                    Min = 30,
+                    Max = 999,
+                    Default = 144,
+                    Callback = function(Value)
+                        setfpscap(Value)
+                    end
+                })
+
+                Section:TextBox({
+                    Name = "Custom Title",
+                    Flag = "Custom Title",
+                    Default = "constant.cc | {date}",
+                    Placeholder = "{date}",
+                    Callback = function(Text)
+                        Dock.SetText(GSub(Text, "{date}", Date("%B. %d, %Y")))
+                    end
+                })
+
+                Section:TextBox({
+                    Name = "Custom Watermark",
+                    Flag = "Custom Watermark",
+                    Default = "constant.cc | {date} | {uid} | {fps} fps | {ping} ms",
+                    Placeholder = "{date} - {uid} - {fps} - {ping}"
+                })
+
+                Section:Button({
+                    Name = "Reset Position",
+                    Callback = function()
+                        Watermark.Outline.Position = NewUDim2(1, -23, 0, 23)
+                    end
+                })
+            end
+
+            Section = Tab:Section({
+                Name = "Configurations",
+                Side = "Right",
+                Fill = true
+            })
+            do
+                local Options = Menu.Config("List")
+
+                local ConfigList = Section:Dropdown({
+                    Name = "Config",
+                    Flag = "Config List",
+                    Exclude = true,
+                    Options = Options,
+                    Default = Options[1],
+                    Size = 125
+                })
+
+                local ConfigTextBox = Section:TextBox({
+                    Placeholder = "Config Name",
+                    Default = ""
+                })
+
+                Section:Button({
+                    Name = "New",
+                    CallbackText = "Created!",
+                    Callback = function()
+                        local String = ConfigTextBox.Get()
+
+                        if String then
+                            Menu.Config("New", String)
+
+                            local List = Menu.Config("List")
+
+                            ConfigList.Options = List
+                            ConfigList.Set(List[1])
+                        end
+                    end
+                })
+
+                Section:Button({
+                    Name = "Save",
+                    CallbackText = "Saved!",
+                    Callback = function()
+                        local String = ConfigList.Get()
+
+                        if String then
+                            Menu.Config("Save", String)
+                        end
+                    end
+                })
+
+                Section:Button({
+                    Name = "Load",
+                    CallbackText = "Loaded!",
+                    Callback = function()
+                        local String = ConfigList.Get()
+
+                        if String then
+                            Menu.Config("Load", String)
+
+                            Library:Notify({
+                                Text = Format("Loaded config: %s", String),
+                                Time = 3
+                            })
+                        end
+                    end
+                })
+
+                Section:Button({
+                    Name = "Set Autoload",
+                    CallbackText = "Set!",
+                    Callback = function()
+                        local String = ConfigList.Get()
+
+                        if String then
+                            Menu.Config("Set Autoload", String)
+                        end
+                    end
+                })
+
+                Section:Button({
+                    Name = "Reset",
+                    CallbackText = "Reset!",
+                    Confirm = true,
+                    Callback = function()
+                        local String = ConfigList.Get()
+
+                        if String then
+                            Menu.Config("Reset", String)
+                        end
+                    end
+                })
+
+                Section:Button({
+                    Name = "Refresh",
+                    CallbackText = "Refreshed!",
+                    Callback = function()
+                        local List = Menu.Config("List")
+                        local FirstValue = List[1]
+
+                        ConfigList.Close()
+
+                        ConfigList.Options = List
+
+                        if FirstValue then
+                            ConfigList.Set(FirstValue)
+                        else
+                            ConfigList.Value = nil
+
+                            ConfigList.Update()
+                        end
+                    end
+                })
+
+                Section:Button({
+                    Name = "Delete",
+                    CallbackText = "Deleted!",
+                    Confirm = true,
+                    Callback = function()
+                        local String = ConfigList.Get()
+
+                        if String then
+                            Menu.Config("Delete", String)
+
+                            local List = Menu.Config("List")
+
+                            ConfigList.Options = List
+                            ConfigList.Set(List[1])
+                        end
+                    end
+                })
+            end
+        end
+    end
+
+    Environment = Library:Window({
+        Name = "Environment",
+        Size = NewUDim2(0, 589, 0, 402),
+        Bind = "none",
+        Visible = false,
+        HasTabs = true,
+        Disabled = true
+    })
+    do
+        local ListLabel
+
+        local AddWhitelist
+        local Prioritize
+        local DisableEsp
+
+        local ChosenInfo
+
+        local SearchString = ""
+
+        Tab = Environment:Tab({
+            Name = "Players",
+            Opened = true
+        })
+        do
+            Tab:Bar({
+                Side = "Fill",
+
+                TextBox = true,
+                Placeholder = "",
+
+                Callback = function(String)
+                    SearchString = Lower(String)
+
+                    local List = Flags["Player List"]
+                    local NewList = {}
+
+                    local InfoPlayers = Info.Players
+
+                    for i = 1, #InfoPlayers do
+                        local This = InfoPlayers[i]
+                        local Name = This.Name
+
+                        if StringFind(Lower(Name), SearchString) then
+                            NewList[#NewList + 1] = Name
+                        end
+                    end
+
+                    List.ShowValues(NewList)
+
+                    if #NewList == 1 then
+                        List.SetValue(NewList[1])
+                    end
+                end
+            })
+
+            Section = Tab:ContentBox({
+                Side = "Fill",
+                Offset = -2,
+                Size = 312
+            })
+            do
+                Section:List({
+                    Options = {},
+                    Exclude = LocalPlayer.Name,
+
+                    Clickable = true,
+
+                    Flag = "Player List",
+                    Rows = { "Player", "Team", "Priority" },
+
+                    Callback = function(String)
+                        local This = Info.FindByName(String)
+
+                        if This then
+                            local Player = This.Player
+
+                            ChosenInfo = This
+
+                            AddWhitelist.Set(This.Whitelist)
+                            DisableEsp.Set(This.DisableEsp)
+                            Prioritize.Set(This.Priority)
+
+                            ListLabel.SetText(Format(
+                                "Display Name: %s\nUsername: %s\nUser Id: %d\nAccount Age: %d days\nFriends: %s\nStaff: %s",
+                                Player.DisplayName,
+                                String,
+                                Player.UserId,
+                                Player.AccountAge,
+                                This.Friends,
+                                This.Staff
+                            ))
+                        end
+                    end,
+
+                    Added = function(Value)
+                        Value[1].Visible = StringFind(Lower(Info.FindByName(Value[2]).Name), SearchString) and true or false
+                    end,
+
+                    Filter = function(Values)
+                        local NewList = {}
+
+                        for i = 1, #Values do
+                            local Value = Values[i]
+
+                            NewList[i] = { Value, Info.FindByName(Value[2]) }
+                        end
+
+                        Sort(NewList, function(A, B)
+                            return ((A[2].Priority and 3) or (A[2].Whitelist and 2) or 0) + (A[2].Teammate and 0 or 1) > ((B[2].Priority and 3) or (B[2].Whitelist and 2) or 0) + (B[2].Teammate and 0 or 1)
+                        end)
+
+                        return NewList, { 1 }
+                    end
+                })
+            end
+        end
+
+        Tab = Environment:Tab({
+            Name = "Options"
+        })
+        do
+            Section = Tab:ContentBox({
+                Side = "Fill",
+                Size = 334
+            })
+            do
+                ListLabel = Section:Label({
+                    Text = "Display Name: -\nUsername: -\nUser Id: -\nAccount Age: -\nFriends: -\nStaff: false"
+                })
+
+                AddWhitelist = Section:Toggle({
+                    Name = "Whitelist",
+                    Callback = function(Value)
+                        if ChosenInfo then
+                            ChosenInfo.Whitelist = Value
+
+                            Flags["Player List"].EditValue(ChosenInfo.Name, {
+                                [3] = (ChosenInfo.Whitelist and '<font color="rgb(158, 225, 255)">Whitelist</font>') or (ChosenInfo.Priority and '<font color="rgb(255, 0, 0)">Priority</font>') or "Neutral"
+                            })
+
+                            if Value then
+                                Prioritize.Set(false)
+                            end
+                        end
+                    end
+                })
+
+                Prioritize = Section:Toggle({
+                    Name = "Prioritise",
+                    Callback = function(Value)
+                        if ChosenInfo then
+                            ChosenInfo.Priority = Value
+
+                            Flags["Player List"].EditValue(ChosenInfo.Name, {
+                                [3] = (ChosenInfo.Whitelist and '<font color="rgb(158, 225, 255)">Whitelist</font>') or (ChosenInfo.Priority and '<font color="rgb(255, 0, 0)">Priority</font>') or "Neutral"
+                            })
+
+                            if Value then
+                                AddWhitelist.Set(false)
+                            end
+                        end
+                    end
+                })
+
+                DisableEsp = Section:Toggle({
+                    Name = "Disable Esp",
+                    Callback = function(Value)
+                        if ChosenInfo then
+                            ChosenInfo.DisableEsp = Value
+                        end
+                    end
+                })
+
+                Section:Button({
+                    Name = "Reset All",
+                    Callback = function()
+                        local InfoPlayers = Info.Players
+
+                        local NewList = {}
+
+                        for i = 1, #InfoPlayers do
+                            local This = InfoPlayers[i]
+                            local Name = This.Name
+
+                            This.Whitelist = false
+                            This.Priority = false
+                            This.DisableEsp = false
+
+                            NewList[#NewList + 1] = {
+                                [1] = Name,
+                                [4] = (This.Whitelist and '<font color="rgb(158, 225, 255)">Whitelist</font>') or (This.Priority and '<font color="rgb(255, 0, 0)">Priority</font>') or "Neutral"
+                            }
+                        end
+
+                        AddWhitelist.Set(false)
+                        Prioritize.Set(false)
+                        DisableEsp.Set(false)
+
+                        Flags["Player List"].EditValues(NewList)
+                    end
+                })
+
+                Section:Button({
+                    Name = "Whitelist Friends",
+                    Callback = function()
+                        local InfoPlayers = Info.Players
+
+                        local NewList = {}
+
+                        for i = 1, #InfoPlayers do
+                            local This = InfoPlayers[i]
+
+                            if This.Friends ~= "true" then continue end
+
+                            This.Whitelist = true
+
+                            NewList[#NewList + 1] = {
+                                [1] = This.Name,
+                                [4] = (This.Whitelist and '<font color="rgb(158, 225, 255)">Whitelist</font>') or (This.Priority and '<font color="rgb(255, 0, 0)">Priority</font>') or "Neutral"
+                            }
+                        end
+
+                        Flags["Player List"].EditValues(NewList)
+                    end
+                })
+            end
+        end
+    end
+
+    Theme = Library:Window({
+        Name = "Theme",
+        Size = NewUDim2(0, 450, 0, 274),
+        Bind = "none",
+        Visible = false,
+        Disabled = true
+    })
+    do
+        local Bar
+
+        Bar = Theme:Bar({
+            Side = "Fill",
+            ButtonsSide = "Center",
+            Buttons = {
+                {
+                    "Default.json",
+                    function(Value)
+                        Menu.ConfigTheme("Load", Value)
+
+                        MenuTheme = Menu.Theme
+
+                        Flags["Menu Outline Color"].FromRGB(MenuTheme.Outline, false)
+
+                        Flags["Accent Color"].FromRGB(MenuTheme.Accent.A, false)
+
+                        Flags["Indev Color"].FromRGB(MenuTheme.Indev, false)
+                        Flags["Unsafe Color"].FromRGB(MenuTheme.Unsafe, false)
+                        Flags["Blocked Color"].FromRGB(MenuTheme.Blocked, false)
+
+                        Flags["Tree Outline Color"].FromRGB(MenuTheme.Tree.Outline, false)
+                        Flags["Tree Active Color"].FromRGB(MenuTheme.Tree.Active, false)
+                        Flags["Tree Inactive Color"].FromRGB(MenuTheme.Tree.Inactive, false)
+
+                        Flags["Toggle Outline Color"].FromRGB(MenuTheme.Toggle.Outline, false)
+                        Flags["Toggle Active Color"].FromRGB(MenuTheme.Toggle.Active, false)
+                        Flags["Toggle Inactive Color"].FromRGB(MenuTheme.Toggle.Inactive, false)
+
+                        Flags["Slider Background Color"].FromRGB(MenuTheme.Slider.Background, false)
+                        Flags["Slider Fill Color"].FromRGB(MenuTheme.Slider.Fill, false)
+
+                        Flags["Dropdown Outline Color"].FromRGB(MenuTheme.Dropdown.Outline, false)
+                        Flags["Dropdown Gradient A"].FromRGB(MenuTheme.Dropdown["Gradient A"], false)
+                        Flags["Dropdown Gradient B"].FromRGB(MenuTheme.Dropdown["Gradient B"], false)
+
+                        Flags["TextBox Outline Color"].FromRGB(MenuTheme.TextBox.Outline, false)
+                        Flags["TextBox Inline Color"].FromRGB(MenuTheme.TextBox.Inline, false)
+                        Flags["TextBox Background Color"].FromRGB(MenuTheme.TextBox.Background, false)
+
+                        Flags["Button Outline Color"].FromRGB(MenuTheme.Button.Outline, false)
+                        Flags["Button Gradient A"].FromRGB(MenuTheme.Button["Gradient A"], false)
+                        Flags["Button Gradient B"].FromRGB(MenuTheme.Button["Gradient B"], false)
+
+                        Flags["Keybind Background Color"].FromRGB(MenuTheme.Keybind.Background, false)
+
+                        Flags["Contrast Color A"].FromRGB(MenuTheme.Contrast.A, false)
+                        Flags["Contrast Color B"].FromRGB(MenuTheme.Contrast.B, false)
+                        Flags["Contrast Color C"].FromRGB(MenuTheme.Contrast.C, false)
+                        Flags["Contrast Color D"].FromRGB(MenuTheme.Contrast.D, false)
+
+                        Flags["Text Color A"].FromRGB(MenuTheme["Text Color"].A, false)
+                        Flags["Text Color B"].FromRGB(MenuTheme["Text Color"].B, false)
+
+                        Flags["Text Stroke"].Set(MenuTheme["Text Stroke"].Enabled, false)
+                        Flags["Text Stroke Color"].FromRGB(MenuTheme["Text Stroke"].Color, false)
+                    end,
+                    "Dropdown",
+                    Menu.ConfigTheme("List"),
+                    80
+                },
+
+                {
+                    "Save",
+                    function()
+                        local String = Bar.Buttons[1].GetChosen()
+
+                        if String then
+                            Menu.ConfigTheme("Save", String)
+                        end
+                    end
+                },
+
+                {
+                    "Refresh",
+                    function()
+                        local Button = Bar.Buttons[1]
+                        local Choice = Button.GetChosen()
+
+                        local NewTheme = Menu.ConfigTheme("List")
+
+                        Button.Options = NewTheme
+
+                        Button.Close()
+
+                        if not Find(NewTheme, Choice) then
+                            local First = NewTheme[1]
+
+                            if First then
+                                Button.SetValue(First)
+                            else
+                                Button.SetValue("Default.json")
+                            end
+                        else
+                            Button.SetValue(Choice)
+                        end
+                    end
+                }
+            }
+        })
+
+        Section = Theme:ContentBox({
+            Side = "Fill",
+            Offset = -2,
+            Size = 216
+        })
+        do
+            Section:Label({
+                Text = "Outline",
+                Icon = { Images["Palette Icon"], NewUDim2(0, 3, 0, 1), NewUDim2(0, 9, 0, 9) }
+            }):Colorpicker({
+                Color = MenuTheme.Outline,
+                Flag = "Menu Outline Color",
+                Side = "Left",
+                Exclude = true,
+                Callback = function(Color)
+                    MenuTheme.Outline = Color
+
+                    Library:SetTheme(nil, { "Outline" })
+                end
+            })
+
+            Section:Label({
+                Text = "Accent",
+                Icon = { Images["Palette Icon"], NewUDim2(0, 3, 0, 1), NewUDim2(0, 9, 0, 9) }
+            }):Colorpicker({
+                Color = MenuTheme.Accent.A,
+                Flag = "Accent Color",
+                Side = "Left",
+                Exclude = true,
+                Callback = function(Color)
+                    MenuTheme.Accent = Menu.GetAccents(Color)
+
+                    Library:SetTheme(nil, { "Accent" })
+                end
+            })
+
+            Section:Label({
+                Text = "Indev",
+                Icon = { Images["Palette Icon"], NewUDim2(0, 3, 0, 1), NewUDim2(0, 9, 0, 9) }
+            }):Colorpicker({
+                Color = MenuTheme.Indev,
+                Flag = "Indev Color",
+                Side = "Left",
+                Exclude = true,
+                Callback = function(Color)
+                    MenuTheme.Indev = Color
+
+                    Library:SetTheme(nil, { "Indev" })
+                end
+            })
+
+            Section:Label({
+                Text = "Unsafe",
+                Icon = { Images["Palette Icon"], NewUDim2(0, 3, 0, 1), NewUDim2(0, 9, 0, 9) }
+            }):Colorpicker({
+                Color = MenuTheme.Unsafe,
+                Flag = "Unsafe Color",
+                Side = "Left",
+                Exclude = true,
+                Callback = function(Color)
+                    MenuTheme.Unsafe = Color
+
+                    Library:SetTheme(nil, { "Unsafe" })
+                end
+            })
+
+            Section:Label({
+                Text = "Blocked",
+                Icon = { Images["Palette Icon"], NewUDim2(0, 3, 0, 1), NewUDim2(0, 9, 0, 9) }
+            }):Colorpicker({
+                Color = MenuTheme.Blocked,
+                Flag = "Blocked Color",
+                Side = "Left",
+                Exclude = true,
+                Callback = function(Color)
+                    MenuTheme.Blocked = Color
+
+                    Library:SetTheme(nil, { "Blocked" })
+                end
+            })
+
+            Tree = Section:ExpandableLabel({
+                Text = "Tree",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 40
+            })
+            do
+                Tree:Label({
+                    Text = "Outline"
+                }):Colorpicker({
+                    Color = MenuTheme.Tree.Outline,
+                    Flag = "Tree Outline Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Tree.Outline = Color
+
+                        Library:SetTheme(nil, { "Tree" }, { "Outline" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Active"
+                }):Colorpicker({
+                    Color = MenuTheme.Tree.Active,
+                    Flag = "Tree Active Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Tree.Active = Color
+
+                        Library:SetTheme(nil, { "Tree" }, { "Active" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Inactive"
+                }):Colorpicker({
+                    Color = MenuTheme.Tree.Inactive,
+                    Flag = "Tree Inactive Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Tree.Inactive = Color
+
+                        Library:SetTheme(nil, { "Tree" }, { "Inactive" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Toggle",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 40
+            })
+            do
+                Tree:Label({
+                    Text = "Outline"
+                }):Colorpicker({
+                    Color = MenuTheme.Toggle.Outline,
+                    Flag = "Toggle Outline Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Toggle.Outline = Color
+
+                        Library:SetTheme(nil, { "Toggle" }, { "Outline" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Active"
+                }):Colorpicker({
+                    Color = MenuTheme.Toggle.Active,
+                    Flag = "Toggle Active Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Toggle.Active = Color
+
+                        Library:SetTheme(nil, { "Toggle" }, { "Active" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Inactive"
+                }):Colorpicker({
+                    Color = MenuTheme.Toggle.Inactive,
+                    Flag = "Toggle Inactive Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Toggle.Inactive = Color
+
+                        Library:SetTheme(nil, { "Toggle" }, { "Inactive" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Slider",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 28
+            })
+            do
+                Tree:Label({
+                    Text = "Background"
+                }):Colorpicker({
+                    Color = MenuTheme.Slider.Background,
+                    Flag = "Slider Background Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Slider.Background = Color
+
+                        Library:SetTheme(nil, { "Slider" }, { "Background" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Fill"
+                }):Colorpicker({
+                    Color = MenuTheme.Slider.Fill,
+                    Flag = "Slider Fill Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Slider.Fill = Color
+
+                        Library:SetTheme(nil, { "Slider" }, { "Fill" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Dropdown",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 40
+            })
+            do
+                Tree:Label({
+                    Text = "Outline"
+                }):Colorpicker({
+                    Color = MenuTheme.Dropdown.Outline,
+                    Flag = "Dropdown Outline Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Dropdown.Outline = Color
+
+                        Library:SetTheme(nil, { "Dropdown" }, { "Outline" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Gradient A"
+                }):Colorpicker({
+                    Color = MenuTheme.Dropdown["Gradient A"],
+                    Flag = "Dropdown Gradient A",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Dropdown["Gradient A"] = Color
+
+                        Library:SetTheme(nil, { "Dropdown" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Gradient B"
+                }):Colorpicker({
+                    Color = MenuTheme.Dropdown["Gradient B"],
+                    Flag = "Dropdown Gradient B",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Dropdown["Gradient B"] = Color
+
+                        Library:SetTheme(nil, { "Dropdown" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Text Box",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 40
+            })
+            do
+                Tree:Label({
+                    Text = "Outline"
+                }):Colorpicker({
+                    Color = MenuTheme.TextBox.Outline,
+                    Flag = "TextBox Outline Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.TextBox.Outline = Color
+
+                        Library:SetTheme(nil, { "TextBox" }, { "Outline" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Inline"
+                }):Colorpicker({
+                    Color = MenuTheme.TextBox.Inline,
+                    Flag = "TextBox Inline Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.TextBox.Inline = Color
+
+                        Library:SetTheme(nil, { "TextBox" }, { "Inline" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Background"
+                }):Colorpicker({
+                    Color = MenuTheme.TextBox.Background,
+                    Flag = "TextBox Background Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.TextBox.Background = Color
+
+                        Library:SetTheme(nil, { "TextBox" }, { "Background" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Button",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 40
+            })
+            do
+                Tree:Label({
+                    Text = "Outline"
+                }):Colorpicker({
+                    Color = MenuTheme.Button.Outline,
+                    Flag = "Button Outline Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Button.Outline = Color
+
+                        Library:SetTheme(nil, { "Button" }, { "Outline" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Gradient A"
+                }):Colorpicker({
+                    Color = MenuTheme.Button["Gradient A"],
+                    Flag = "Button Gradient A",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Button["Gradient A"] = Color
+
+                        Library:SetTheme(nil, { "Button" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Gradient B"
+                }):Colorpicker({
+                    Color = MenuTheme.Button["Gradient B"],
+                    Flag = "Button Gradient B",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Button["Gradient B"] = Color
+
+                        Library:SetTheme(nil, { "Button" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Keybind",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 16
+            })
+            do
+                Tree:Label({
+                    Text = "Background"
+                }):Colorpicker({
+                    Color = MenuTheme.Keybind.Background,
+                    Flag = "Keybind Background Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Keybind.Background = Color
+
+                        Library:SetTheme(nil, { "Keybind" }, { "Background" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Contrast",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 52
+            })
+            do
+                Tree:Label({
+                    Text = "Color A"
+                }):Colorpicker({
+                    Color = MenuTheme.Contrast.A,
+                    Flag = "Contrast Color A",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Contrast.A = Color
+
+                        Library:SetTheme(nil, { "Contrast" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Color B"
+                }):Colorpicker({
+                    Color = MenuTheme.Contrast.B,
+                    Flag = "Contrast Color B",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Contrast.B = Color
+
+                        Library:SetTheme(nil, { "Contrast" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Color C"
+                }):Colorpicker({
+                    Color = MenuTheme.Contrast.C,
+                    Flag = "Contrast Color C",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Contrast.C = Color
+
+                        Library:SetTheme(nil, { "Custom Gradient", "Contrast" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Color D"
+                }):Colorpicker({
+                    Color = MenuTheme.Contrast.D,
+                    Flag = "Contrast Color D",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme.Contrast.D = Color
+
+                        Library:SetTheme(nil, { "Custom Gradient", "Contrast" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Text Color",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 28
+            })
+            do
+                Tree:Label({
+                    Text = "Color A"
+                }):Colorpicker({
+                    Color = MenuTheme["Text Color"].A,
+                    Flag = "Text Color A",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme["Text Color"].A = Color
+
+                        Library:SetTheme(nil, { "Text Color" }, { "A" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Color B"
+                }):Colorpicker({
+                    Color = MenuTheme["Text Color"].B,
+                    Flag = "Text Color B",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme["Text Color"].B = Color
+
+                        Library:SetTheme(nil, { "Text Color" }, { "B" })
+                    end
+                })
+            end
+
+            Tree = Section:ExpandableLabel({
+                Text = "Text Outlines",
+                Icon = { Images["Folder Icon"], NewUDim2(0, 3, 0, 2), NewUDim2(0, 8, 0, 7) },
+                Size = 29
+            })
+            do
+                Tree:Toggle({
+                    Text = "Enabled",
+                    Flag = "Text Stroke",
+                    Exclude = true,
+                    Default = MenuTheme["Text Stroke"].Enabled,
+                    Callback = function(Value)
+                        MenuTheme["Text Stroke"].Enabled = Value
+
+                        Library:SetTheme(nil, { "Text Stroke" }, { "Enabled" })
+                    end
+                })
+
+                Tree:Label({
+                    Text = "Color"
+                }):Colorpicker({
+                    Color = MenuTheme["Text Stroke"].Color,
+                    Flag = "Text Stroke Color",
+                    Side = "Left",
+                    Exclude = true,
+                    Callback = function(Color)
+                        MenuTheme["Text Stroke"].Color = Color
+
+                        Library:SetTheme(nil, { "Text Stroke" }, { "Color" })
+                    end
+                })
+            end
+        end
+
+        Flags["Menu Theme"] = {
+            Get = function()
+                return Bar.Buttons[1].GetChosen()
+            end,
+
+            Set = function(Value)
+                local Button = Bar.Buttons[1]
+                local NewTheme = Menu.ConfigTheme("List")
+
+                Button.Options = NewTheme
+
+                Button.Close()
+
+                if Find(NewTheme, Value) then
+                    Button.SetValue(Value)
+                else
+                    Button.SetValue("Default.json")
+                end
+            end
+        }
+    end
+
+    Lua = Library:Window({
+        Name = "Lua",
+        Size = NewUDim2(0, 490, 0, 400),
+        Bind = "none",
+        Visible = false,
+        HasTabs = true,
+        Disabled = true
+    })
+    do
+        local Bar
+        local CodeBox
+
+        Tab = Lua:Tab({
+            Name = "Editor",
+            Opened = true
+        })
+        do
+            local Options = Menu.Lua("List", true)
+
+            Bar = Tab:Bar({
+                Side = "Fill",
+                ButtonsSide = "Center",
+                Buttons = {
+                    {
+                        Options[1] or "File",
+                        function(Value)
+                            local Path = Format("%s/%s", Menu.Folders.Luas, Value)
+
+                            CodeBox.SetText(IsFile(Path) and ReadFile(Path) or CodeBox.Default)
+
+                            Bar.Buttons[6].SetText(Menu.Lua("IsLoaded", Value) and "Loaded" or "Unloaded")
+                        end,
+                        "Dropdown",
+                        Options,
+                        80
+                    },
+
+                    {
+                        "Load",
+                        function()
+                            local String = Bar.Buttons[1].GetChosen()
+
+                            if String then
+                                Menu.Lua("Load", String, {
+                                    ["Menu"] = Menu,
+
+                                    ["Camera"] = {
+                                        ["WorldToViewportPoint"] = Camera.WorldToViewportPoint
+                                    }
+                                })
+
+                                Bar.Buttons[6].SetText(Menu.Lua("IsLoaded", String) and "Loaded" or "Unloaded")
+                            end
+                        end
+                    },
+
+                    {
+                        "Unload",
+                        function()
+                            local String = Bar.Buttons[1].GetChosen()
+
+                            if String then
+                                Menu.Lua("Unload", String, {
+                                    ["Menu"] = Menu,
+
+                                    ["Camera"] = {
+                                        ["WorldToViewportPoint"] = Camera.WorldToViewportPoint
+                                    }
+                                })
+
+                                Bar.Buttons[6].SetText(Menu.Lua("IsLoaded", String) and "Loaded" or "Unloaded")
+                            end
+                        end
+                    },
+
+                    {
+                        "Save",
+                        function()
+                            local String = Bar.Buttons[1].GetChosen()
+
+                            if String then
+                                Menu.Lua("Save", String, CodeBox.GetText())
+                            end
+                        end
+                    },
+
+                    {
+                        "Refresh",
+                        function()
+                            local Button = Bar.Buttons[1]
+                            local Choice = Button.GetChosen()
+
+                            local NewOptions = Menu.Lua("List", true)
+
+                            Button.Options = NewOptions
+
+                            Button.Close()
+
+                            if not Find(NewOptions, Choice) then
+                                local First = NewOptions[1]
+
+                                if First then
+                                    Button.SetValue(First)
+                                else
+                                    Button.SetValue("File")
+                                end
+                            else
+                                Button.SetValue(Choice)
+                            end
+                        end
+                    },
+
+                    {
+                        "Unloaded",
+                        nil,
+                        "Label"
+                    }
+                },
+                Offset = -2
+            })
+
+            Section = Tab:ContentBox({
+                Side = "Fill",
+                Size = 314,
+                Offset = -2
+            })
+            do
+                CodeBox = Section:CodeBox({
+                    Size = 306
+                })
+
+                Bar.Buttons[1].SetValue(Options[1])
+            end
+        end
+
+        Tab = Lua:Tab({
+            Name = "Options"
+        })
+        do
+            Tab:Section({
+                Name = "A",
+                Fill = true
+            })
+
+            Tab:Section({
+                Name = "B",
+                Side = "Right",
+                Fill = true
+            })
+        end
+    end
+
+    Activity = Library:Window({
+        Name = "Activity",
+        Size = NewUDim2(0, 500, 0, 500),
+        Bind = "none",
+        Visible = false,
+        HasTabs = true,
+        Disabled = true
+    })
+    do
+        local PlayerBox
+        local ChatBox
+
+        Tab = Activity:Tab({
+            Name = "Players",
+            Opened = true
+        })
+        do
+            PlayerBox = Tab:ContentBox({
+                Side = "Fill",
+                Size = 436,
+                Offset = -2,
+                ScrollDown = true
+            })
+        end
+
+        Tab = Activity:Tab({
+            Name = "Chat"
+        })
+        do
+            local Bar
+
+            Bar = Tab:Bar({
+                Side = "Fill",
+                Buttons = {
+                    {
+                        "Clear",
+                        function()
+                            Bar.Box.Text = ""
+                        end
+                    },
+                    {
+                        "Send",
+                        function()
+                            Spawn(function()
+                                TextChannel:SendAsync(Bar.Value)
+                            end)
+                        end
+                    },
+                },
+
+                TextBox = true,
+                Placeholder = ""
+            })
+
+            ChatBox = Tab:ContentBox({
+                Side = "Fill",
+                Size = 412,
+                Offset = -2,
+                ScrollDown = true
+            })
+        end
+
+        do
+            local List = Players:GetPlayers()
+
+            for i = 1, #List do
+                local Player = List[i]
+                local Name = Player.Name
+
+                if Player ~= LocalPlayer then
+                    PlayerBox:Label({
+                        Text = Format("Player: %s (%s) was already in the server.", Name, Player.UserId)
+                    })
+                end
+
+                Player.Chatted:Connect(function(Message)
+                    ChatBox:Label({
+                        Text = Format('%s: "%s"', Name, Message)
+                    })
+                end)
+            end
+
+            Library.PlayerAdded[#Library.PlayerAdded + 1] = function(Player)
+                local Name = Player.Name
+
+                PlayerBox:Label({
+                    Text = Format("Player: %s (%s) has Joined.", Name, Player.UserId)
+                })
+
+                Player.Chatted:Connect(function(Message)
+                    ChatBox:Label({
+                        Text = Format('%s: "%s"', Name, Message)
+                    })
+                end)
+            end
+
+            Library.PlayerRemoving[#Library.PlayerRemoving + 1] = function(Player)
+                PlayerBox:Label({
+                    Text = Format("Player: %s (%s) has Left.", Player.Name, Player.UserId)
+                })
+            end
+        end
+    end
+
+    Watermark = Window:Watermark({
+        Text = "",
+        Enabled = true
+    })
+    do
+        local StatsHeartbeat = StatsService.Workspace["Heartbeat"]
+
+        RenderStepped:Connect(function()
+            if not Watermark.IsVisible then return end
+
+            local Text = Flags["Custom Watermark"].Value
+
+            Text = GSub(Text, "{date}", Date("%B. %d, %Y"))
+            Text = GSub(Text, "{uid}", LRM_UserNote)
+            Text = GSub(Text, "{fps}", Round(StatsHeartbeat:GetValue()))
+            Text = GSub(Text, "{ping}", Round(Tickbase.GetPing() * 1000))
+
+            Watermark.SetText(Text)
+        end)
+    end
+
+    KeybindsList = Window:KeybindsList({
+        Enabled = true
+    })
+
+    Dock = Library:Dock({
+        Text = GSub(Flags["Custom Title"].Value, "{date}", Date("%B. %d, %Y")),
+        Windows = {
+            { Window, "Configurations", false },
+            { Environment, "Environment", true },
+            { Theme, "Theme", true },
+            { Lua, "Lua", true },
+            { Activity, "Activity", true },
+            { KeybindsList, "Keybinds", false },
+            { Watermark, "Watermark", false }
+        }
+    })
+
+    Flags["Additional Menu Keybind"].SetKeyFromInput(Enum.KeyCode.Delete)
+
+    do
+        RenderStepped:Connect(function()
+            if MouseBehaviour then
+                UserInputService.MouseIconEnabled = IconEnabled
+                UserInputService.MouseBehavior = MouseBehaviour
+
+                if not IconEnabled then
+                    MouseBehaviour = nil
+                end
+            end
+        end)
+    end
+end
+
+
+
+
+
 
 --=============================================================
 -- 5. 对外 API —— 把 Menu 里的能力挂到 Library 上
@@ -8105,7 +12618,7 @@ Library.CreateGradient = function(...) return Menu.CreateGradient(...) end
 Library.ImportImage = function(...) return Menu.ImportImage(...) end
 Library.ImportFont = function(...) return Menu.ImportFont(...) end
 
-Library.Version = "Constant.cc UI (axure) — extracted"
+Library.Version = "Constant.cc UI (axure) — full menu build"
 Library.BasePath = Menu.BasePath
 Library.Game = Menu.Game
 
@@ -8196,9 +12709,14 @@ function Library:SetFlag(Category, Name, Value, Sub)
 	end
 end
 
--- 所有窗口
+-- 所有窗口（原版 5 个：Configurations / Environment / Theme / Lua / Activity）
 function Library:GetWindows()
 	return Library.Windows
+end
+
+-- 按名字找窗口：Library:FindWindow("Environment")
+function Library:FindWindow(Name)
+	return Library:Find(Name)
 end
 
 -- 通知（短写法）

@@ -1,220 +1,109 @@
 --[[
-	=====================================================================
-	ConstantUI 示例 —— 用这套库搭一个完整菜单
-	=====================================================================
-	直接整段粘进执行器即可运行（默认从 GitHub raw 拉库）。
-	=====================================================================
+	===============================================================
+	ConstantUI · 示例
+	---------------------------------------------------------------
+	这份库 = 原版「康.lua」的完整界面，一字未改：
+	  · Menu Library 层（原文件 509–8327 行）
+	  · 完整菜单构建层（原文件 8411–12567 行）
+	    - Configurations 主窗：Legit(4) / Rage(2) / Visuals(5) / Misc(2) / Settings(2)
+	    - Environment 窗：Players / Options
+	    - Theme 窗
+	    - Lua 窗：Editor / Options
+	    - Activity 窗：Players / Chat
+	    - Watermark / KeybindsList / Dock
+	    - 381 个控件，全部注册进 Flags
+
+	所以：加载 → 菜单原样出现。你不需要再手写任何一个 Toggle。
+	===============================================================
 ]]
 
--- ① 加载库（三选一）
-local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/iwsksownw666/ConstantUI/main/ConstantUI.lua"))()  -- 远程
--- local UI = loadfile("ConstantUI.lua")()   -- 本地
--- local UI = getgenv().ConstantUI           -- 已被其它脚本加载过
+--------------------------------------------------------------------
+-- 方式 A：一行从 GitHub 拉（执行器里直接丢进去就行）
+--------------------------------------------------------------------
+local Library = loadstring(game:HttpGet(
+	"https://raw.githubusercontent.com/iwsksownw666/ConstantUI/main/ConstantUI.lua"
+))()
 
--- ② 建窗口（HasTabs = true 才会有顶部标签栏）
-local Window = UI:Window({
-	Name = "constant.cc",
-	Size = Vector2.new(450, 600),      -- 也可写 UDim2.new(0, 450, 0, 600)
-	Bind = Enum.KeyCode.RightAlt,      -- 开关键
-	Visible = false,                   -- 进游戏是否直接显示
-	HasTabs = true
-})
+--------------------------------------------------------------------
+-- 方式 B：本地文件（把 ConstantUI.lua 放进执行器工作目录）
+--------------------------------------------------------------------
+-- local Library = loadstring(readfile("ConstantUI.lua"))()
 
---======================= Tab 1 : Main =========================
-local Tab = Window:Tab({ Name = "Main", Opened = true })
+--------------------------------------------------------------------
+-- 方式 C：作为模块 require（放进 scripts/ 或 require 目录）
+--------------------------------------------------------------------
+-- local Library = require(path.to.ConstantUI)
 
-local Section = Tab:Section({ Name = "General", Side = "Left", Size = 260 })
+--------------------------------------------------------------------
+-- 到这一步，界面已经全出来了。下面全是可选的「接管」操作
+--------------------------------------------------------------------
 
--- Toggle（可分别挂 Keybind / Colorpicker，注意这俩不返回可链式对象）
-local Toggle = Section:Toggle({
-	Name = "Enabled",
-	Flag = "Main Enabled",
-	Default = true,
-	Callback = function(Value)
-		print("toggle:", Value)
+-- 1. 换强调色（原版 Accent，默认偏红）
+Library:SetAccent(Color3.fromRGB(120, 170, 255))
+
+-- 2. 读 / 写某条 flag
+--    原版 flag 有两种命名：扁平 "Name" 和分组 "Category" -> "Name"
+print("Aimbot 是否开启:", Library:GetFlag("Aimbot", "Enabled"))
+print("FOV 当前值:", Library:GetFlag("FOV"))
+print("所有配置名:", table.concat(Library:ListConfigs(), ", "))
+
+-- 设置（等价于用户手动拖动控件）
+Library:SetFlag("Aimbot", "Enabled", true)
+Library:SetFlag("FOV", 120)
+
+-- 3. 遍历全部控件，导出当前值
+local function DumpFlags()
+	local Out = {}
+
+	local Walk
+	Walk = function(Group, Prefix)
+		for Key, Value in pairs(Group) do
+			if typeof(Value) == "table" and typeof(Value.Get) == "function" then
+				local Value2 = Value.Get()
+				Out[#Out + 1] = string.format("%s%s = %s", Prefix, Key, tostring(Value2))
+			elseif typeof(Value) == "table" and typeof(Key) == "string" then
+				Walk(Value, Prefix .. Key .. ".")
+			end
+		end
 	end
-})
 
-Toggle:Colorpicker({
-	Color = Color3.fromRGB(60, 67, 120),
-	Transparency = 0,
-	Flag = "Main Enabled Color",
-	Callback = function(Color, Transparency)
-		print("color:", Color, Transparency)
-	end
-})
+	Walk(Library.Flags, "")
 
-Toggle:Keybind({
-	Mode = "Toggle",
-	Name = "Enabled Keybind",
-	Flag = "Main Enabled Key"
-})
-
-Section:Slider({
-	Name = "Speed",
-	Min = 1,
-	Max = 100,
-	Default = 25,
-	Decimals = 1,
-	Prefix = "x",
-	Flag = "Main Speed",
-	Callback = function(Value)
-		print("slider:", Value)
-	end
-})
-
-Section:Dropdown({
-	Name = "Mode",
-	Options = { "Legit", "Rage", "Custom" },
-	Default = "Legit",
-	Flag = "Main Mode",
-	Callback = function(Value)
-		print("dropdown:", Value)
-	end
-})
-
-Section:Dropdown({
-	Name = "Multi",
-	Options = { "A", "B", "C" },
-	Default = { "A", "B" },          -- Default 传 table = 多选
-	Flag = "Main Multi"
-})
-
-local NameBox = Section:TextBox({
-	Name = "Nickname",
-	Placeholder = "input here",
-	Default = "",
-	Flag = "Main Nick",
-	Callback = function(Text)
-		print("textbox:", Text)
-	end
-})
-
-Section:Button({
-	Name = "Apply",
-	CallbackText = "Done!",
-	Callback = function()
-		print("button clicked, textbox =", NameBox.Get())
-	end
-})
-
-Section:Label({ Text = "Menu Key" }):Keybind({
-	Default = Enum.KeyCode.RightAlt,
-	Modes = {},
-	Mode = "Toggle",
-	Flag = "Main Menu Key"
-})
-
---======================= Tab 2 : Visuals =========================
-local Tab2 = Window:Tab({ Name = "Visuals" })
-
-local VisualSection = Tab2:Section({ Name = "Colors", Side = "Left", Size = 260 })
-
-local EspToggle = VisualSection:Toggle({ Name = "ESP", Flag = "Visual Esp" })
-
-EspToggle:Colorpicker({
-	Color = Color3.fromRGB(255, 255, 255),
-	Transparency = 0,
-	Flag = "Visual Esp Color"
-})
-
---======================= Tab 3 : Config =========================
-local Tab3 = Window:Tab({ Name = "Config" })
-
-local ConfigSection = Tab3:Section({ Name = "Configurations", Side = "Right", Fill = true })
-
-local Options = UI:ListConfigs()
-
-if #Options == 0 then
-	Options = { "default" }
+	return Out
 end
 
-local ConfigList = ConfigSection:Dropdown({
-	Name = "Config",
-	Flag = "Config List",
-	Exclude = true,
-	Options = Options,
-	Default = Options[1],
-	Size = 125
-})
+local FlagsDump = DumpFlags()
+print(string.format("共 %d 条 flag", #FlagsDump))
 
-local ConfigName = ConfigSection:TextBox({
-	Placeholder = "Config Name",
-	Default = ""
-})
+-- 4. 配置持久化（存到 getconstant.cc/Configs/*.cfg）
+Library:SaveConfig("my_setup")
+Library:LoadConfig("my_setup")
+Library:SetAutoload("my_setup")  -- 下次加载自动套用
 
-ConfigSection:Button({
-	Name = "New",
-	CallbackText = "Created!",
-	Callback = function()
-		local Name = ConfigName.Get()
+-- 5. 找到某个窗口，手动开关
+local Environment = Library:FindWindow("Environment")
+if Environment then
+	Environment:Toggle(true)
+end
 
-		if Name and Name ~= "" then
-			UI:SaveConfig(Name)
+-- 6. 通知
+Library:Toast("ConstantUI loaded", 3)
 
-			local List = UI:ListConfigs()
+-- 7. 卸载（销毁所有 Gui、断开全部连接）
+-- Library:Unload()
 
-			ConfigList.Options = List
-			ConfigList.Set(List[1])
-		end
-	end
-})
-
-ConfigSection:Button({
-	Name = "Load",
-	Callback = function()
-		local Name = ConfigList.Get()
-
-		if Name then
-			UI:LoadConfig(Name)
-		end
-	end
-})
-
-ConfigSection:Button({
-	Name = "Save",
-	Callback = function()
-		local Name = ConfigList.Get()
-
-		if Name then
-			UI:SaveConfig(Name)
-		end
-	end
-})
-
---======================= 附加组件 =========================
-local Watermark = Window:Watermark({
-	Text = "constant.cc | 60 fps",
-	Enabled = true
-})
-
-local KeybindsList = Window:KeybindsList({
-	Enabled = true
-})
-
-local Dock = UI:Dock({
-	Text = "constant.cc",
-	Windows = {
-		{ Window, "Main", false },
-		{ KeybindsList, "Keybinds", false },
-		{ Watermark, "Watermark", false }
-	}
-})
-
---======================= 通知 =========================
-UI:Notify({
-	Text = "ConstantUI loaded (RightAlt to toggle)",
-	Time = 4
-})
-
---======================= 换皮（可选） =========================
--- UI:SetAccent(Color3.fromRGB(200, 60, 60))
-
---======================= 显示 / 隐藏 / 退出 =========================
--- 开关窗口（Bind 键已自动绑定，这里给手动调用写法）：
--- UI:Fade(Window, true)      -- 显示
--- UI:Fade(Window, false)     -- 隐藏
--- Window.IsVisible           -- 当前是否可见
-
--- 彻底销毁（所有 Gui + 连接 + 窗口列表）：
--- UI:Unload()
+--------------------------------------------------------------------
+-- 附：如果你想要的是「空框架，自己搭菜单」（不用原版那套）
+--------------------------------------------------------------------
+-- 库导出的是 Library 本体，控件构造函数都在：
+--
+--   local Win = Library:Window({ Name = "MyScript", Size = UDim2.fromOffset(600, 400), HasTabs = true })
+--   local Tab = Win:Tab({ Name = "Main" })
+--   local Sec = Tab:Section({ Name = "General", Side = "Left" })
+--   Sec:Toggle({ Name = "Enabled", Flag = "Enabled", Default = true })
+--   Sec:Slider({ Name = "Speed", Flag = "Speed", Min = 1, Max = 100, Default = 50 })
+--   Sec:Dropdown({ Name = "Mode", Flag = "Mode", Options = { "A", "B" }, Default = "A" })
+--   Sec:Button({ Name = "Click", Callback = function() print("hi") end })
+--
+-- 注意：原版菜单已经在 Library:Window 里自动建好了（5 个窗口），
+-- 所以你要是自己再建窗口，会是第 6 个，两个并存。
