@@ -41,6 +41,7 @@ Section:Toggle({
 ```
 
 完整可跑示例见 [`example.lua`](example.lua)：三页菜单 + 配置页 + 水印 + 键位列表 + Dock。
+只想快速上手就看 [`minimal.lua`](minimal.lua)（50 行骨架，粘上就跑）。
 
 ---
 
