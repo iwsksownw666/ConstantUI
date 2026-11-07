@@ -1,0 +1,5 @@
+# 统一用 LF，避免行尾把 Lua 搞乱
+* text=auto eol=lf
+*.lua text eol=lf
+*.md text eol=lf
+*.png binary

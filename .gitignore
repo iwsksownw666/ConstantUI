@@ -1,0 +1,13 @@
+# 构建 / 测试中间产物
+_build/
+build/
+_test/
+run_test.lua
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.tmp
